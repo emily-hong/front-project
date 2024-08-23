@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- slick css CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <!-- slick css CDN (테마) -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"
+    />
+    <!-- jQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- slick js CDN -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"
+    />
+    <!-- sub css -->
+    <link rel="stylesheet" href="/index.css" />
+    <script
+      type="text/javascript"
+      src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"
+    ></script>
+
+    <!-- style 임시 -->
+    <style text="text/css">
+
+        /* 테마 정보*/
+        .themes {
+            width: 1400px;
+            height: 60px;
+            border: 1px solid green;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            margin: 10px auto; /* 중앙 정렬을 위해 자동 여백 설정 */
+        }
+
+        .theme {
+            width: 120px;
+            height: 80%;
+            border: 1px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .themeIcon {
+            width: 30%;
+            height: 60%;
+        }
+
+        .themeName {
+            height: 60%;
+            font-size: small;
+        }
+
+        /* 숙소 정보 */
+        .content {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start; /* 행 간의 정렬을 상단에 맞춤 */
+            /* justify-content: space-around; */
+            justify-content: flex-start; /* 요소를 왼쪽 정렬 */
+        }
+
+        .houseContainer {
+            border: 1px solid black;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            width: 31%;
+            height: 400px;
+            padding: 15px;
+            margin: 60px 13px 20px 13px;
+        }
+
+        .houseContainer * {
+            border: 1px solid red;
+            margin: 1px;
+        }
+
+        .houseImage {
+            height: 80%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .houseRate {
+            height: 7%;
+        }
+
+        .houseName {
+            height: 7%;
+        }
+
+        .housePrice {
+            height: 7%;
+        }
+
+        .btn_gotop {
+            display:none;
+            position:fixed;
+            bottom:30px;
+            right:30px;
+            z-index:999;
+            border:1px solid #ccc;
+            outline:none;
+            background-color:white;
+            color:#333;
+            cursor:pointer;
+            padding:10px 10px;
+            border-radius:100%;
+        }
+
+        .glyphicon {
+            font-size: small;
+        }
+
+        .slick-slide {
+            margin: 0 10px;
+            text-align: center;
+        }
+
+        .slick-slide img {
+            margin: 0 auto;
+        }
+
+        .slick-prev {
+            background-color: lightgray;
+        }
+
+        /* footer */
+        /* footer {
+            border: 1px solid purple;
+            height: 500px;
+            background-color: rgb(250, 250, 250);
+        } */
+
+    </style>
+
+    <title>저기어때</title>
+
+    <script type="text/javascript">
+      $(function () {
+        // 스크롤 감지
+        $(window).on("scroll", function () {
+          if ($(window).scrollTop() === 0) {
+            // 화면 맨 위로 스크롤되었을때
+            $(".header-container").removeClass("header-small");
+          } else {
+            // 화면이 맨 위로 스크롤 되었을 때
+            $(".header-container").addClass("header-small");
+          }
+        }); //on
+
+        /* 슬라이딩 윈도우 */
+        $('.themes').slick({
+            infinite: true,
+            slidesToShow: 6,
+            slidesToScroll: 3,
+            variableWidth : true,
+        });
+        /* 슬라이딩 윈도우 끝*/
+
+        // hosueContainer(숙소 상세보기) 클릭 시 해당 숙소 정보를 localStorage 로 넘기는 로직... JSON 방식
+        $('.houseContainer').on('click', function() {
+            //선택된 요소에서 속성 값을 가져오기
+            var imageUrl = $(this).attr('imageUrl');
+            var imageSubUrl = $(this).attr('imageSubUrl').split(','); //쉼표로 구분된 문자열을 배열로 변환
+            var name = $(this).attr('hName');
+            var rate = $(this).attr('hRate');
+            var price = $(this).attr('hPrice');
+            var description = $(this).attr('hDescription');
+            var theme = $(this).attr('hTheme').split(',');
+            var reserveM = $(this).attr('hReserveM');
+            var reserveW = $(this).attr('hReserveW');
+            var location = $(this).attr('hLocation').split(',');
+
+            // JSON 데이터 생성
+            var houseData = {
+                imageUrl: imageUrl,
+                imageSubUrl: imageSubUrl, // 이미지 배열
+                name: name,
+                rate: rate,
+                price: price, 
+                description: description,
+                theme: theme, //카테고리 배열
+                reserveM: reserveM, 
+                reserveW: reserveW,
+                location: location
+            };
+
+            // JSON 데이터를 localStorage에 저장
+            localStorage.setItem(imageUrl, JSON.stringify(houseData));
+
+            alert("숙소 상세보기...");
+        })
+        // hosueContainer(숙소 상세보기) 클릭 시 해당 숙소 정보를 localStorage 로 넘기는 로직... JSON 방식 끝
+
+        /* TOP 버튼 이벤트 처리 */
+        $(window).scroll(function(){
+            if ($(this).scrollTop() > 300){
+                $('.btn_gotop').show();
+            } else{
+                $('.btn_gotop').hide();
+            }
+        });
+    
+      $('.btn_gotop').click(function(){
+            $('html, body').animate({scrollTop:0},400);
+            return false;
+        });
+        /* TOP 버튼 이벤트 처리 끝*/
+
+
+    });
+    </script>
+  </head>
+
+  <body>
+    <!-- 헤더 -->
+    <div class="header-container">
+      <div class="header-content">헤더 로고, 검색, 로그인 버튼 등..</div>
+    </div>
+
+    <!-- 테마 선택 -->
+    <div class="themes">
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/im/pictures/mediaverse/category_icon/original/3e5243c8-4d15-4c6b-97e3-7ba2bb7bb880.png">
+                <div class="themeName">컬쳐 아이콘</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/c5a4f6fc-c92c-4ae8-87dd-57f1ff1b89a6.jpg">
+                <div class="themeName">기상천외한 숙소</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/3b1eb541-46d9-4bef-abc4-c37d77e3c21b.jpg">
+                <div class="themeName">최고의 전망</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/3726d94b-534a-42b8-bca0-a0304d912260.jpg">
+                <div class="themeName">인기 급상승</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/757deeaa-c78f-488f-992b-d3b1ecc06fc9.jpg">
+                <div class="themeName">스키 타고 출입</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/f0c5ca0f-5aa0-4fe5-b38d-654264bacddf.jpg">
+                <div class="themeName">키즈	</div>
+            </div>
+        </a>
+       
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/bcd1adc0-5cee-4d7a-85ec-f6730b0f8d0c.jpg">
+                <div class="themeName">자연</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/732edad8-3ae0-49a8-a451-29a8010dcc0c.jpg">
+                <div class="themeName">통나무집</div>
+            </div>    
+        </a>
+        
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/ca25c7f3-0d1f-432b-9efa-b9f5dc6d8770.jpg">
+                <div class="themeName">캠핑장</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/1b6a8b70-a3b6-48b5-88e1-2243d9172c06.jpg">
+                <div class="themeName">캐슬</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/8e507f16-4943-4be9-b707-59bd38d56309.jpg">
+                <div class="themeName">섬</div>
+            </div>
+        </a>
+
+        <a href="#">
+            <div class="theme">
+                <img class="themeIcon" src="https://a0.muscache.com/pictures/4221e293-4770-4ea8-a4fa-9972158d4004.jpg">
+                <div class="themeName">동굴/절벽</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 페이지 내용 컨테이너 -->
+    <div class="container-fluid">
+        <div class="content">
+            <div class="houseContainer"
+            imageUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=1440&im_q=highq"
+            imageSubUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/f52a6a13-c8d1-4966-ad19-e614fd4bae3c.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/dcb25748-642f-4314-9815-acaba652ca1e.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/0caa1462-bd5f-4cfa-8f9d-7012f7eb7d02.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/d25d568a-7cd3-460b-accc-94c6d71ccbde.jpeg?im_w=1440&im_q=highq"
+            hName="인사이드 아웃2 세계에서 지울 수 없는 추억 만들기"
+            hRate="5"
+            hPrice="450,000"
+            hDescription="누군가를 보며 '머릿속을 들여다보고 싶다'고 생각하신 적 있나요? 이제 그 궁금증을 말끔히 해결해 보세요! 사상 최초로 라일리의 감정 컨트롤 본부에서 하룻밤을 보낼 기회가 열립니다. 정말 근사하죠?! 네, 그리고 예상하시는 것처럼 라일리의 감정을 직접 조절하실 수 있습니다. 기쁨, 슬픔, 버럭 등 익숙한 감정은 물론, 제가 미처 생각지도 못했던 새로운 감정들도요. 아무튼 우리 라일리, 잘 부탁드려요. 제가 정말 사랑하거든요!
+
+            프로그램
+            제 눈에 안경일지 모르지만, 저희 본부는 최고로 멋져요! 감정 제어판을 조작하지 않을 때 감정들이 어떻게 생활하는지 가까이에서 지켜보세요. 이번에 새롭게 합류한 여러 감정도 만나실 수 있어요. 새로운 감정들은 뭐랄까... 개성이 참으로 뚜렷하다고 해두죠. 어쨌든, 하루 동안 여러분 머릿속 감정들도 짜릿한 시간을 보낼 거예요. 놀라움 가득한 하루를 기대해 주세요.
+            
+            특히 '핵심 기억'을 저장할 구슬을 어떤 모습으로 디자인하여 만드실지 벌써 궁금하네요! 단, 라일리의 기억 구슬은 하나라도 떨어트리지 않도록 주의해 주세요. 부탁드릴게요! • 라일리의 감정 컨트롤 본부 책임자가 되어 모든 감정을 갖고 놀아보세요. 음, '갖고 놀다'라는 표현은 적절하지 않은 것 같네요. 최대한 즐거운 시간을 보내시되, 그러니까... 침착함을 유지하시면 좋을 것 같아요. 아니에요, 제 말을 마음에 너무 담아두지 마세요. 전혀 걱정되지 않아요.
+            
+            • 감정이 가득 담긴 보물찾기 게임에서 여행 가방을 살펴보며 감정의 향연을 만끽해 보세요! 저는 보물찾기 게임도, 감정도 정말 좋아해요! 그러니 금상첨화죠. 단서를 끝까지 따라가다 보면 비밀을 발견하실지도 몰라요. 더 이상의 설명은 생략하죠.
+            
+            • 특별한 피자 배달 서비스도 준비했습니다. 피자는 떠올리기만 해도 행복해지는 음식이니까요. 토핑마다 의미하는 감정이 다르답니다! 브로콜리를 보면 어떤 감정이 떠오르세요? 맞아요, 바로 까칠함이에요. (생각만 해도 속이 안 좋아요.)
+            
+            • 라일리가 가장 좋아하는 스포츠, 하키를 거실에서 해 보세요. 스포츠 팬 여러분을 위해 제가 신경 좀 썼죠! 그런데 실제 하키는 아니고 에어 하키 게임이에요. 생생한 긴장감과 짜릿함까지, 모두 그대로 느끼실 수 있어요. 경기 방식이 살짝 다를 뿐이죠!
+            
+            • 감정 컨트롤 본부의 기억 저장소에서 영감을 받아 나만의 기억 구슬을 만들어 보세요! 원래는 안 되지만 이번만 특별히 기억 구슬을 집에 가져가실 수 있도록 허락해 드릴게요.
+            
+            • 잠자리에 들 준비가 되셨나요? 저와 같은 사람이라면(즐거움이 넘치는 사람 말이죠, 안녕하세요), 별빛으로 가득한 제 천상의 원더랜드를 제공해 드릴 수 있습니다. 또는, 할 일 목록이나 꼼꼼하게 관리된 달력으로 무장하지 않고는 걱정으로 잠을 잘 수 없는 사람에게 딱 맞는 침실도 마련되어 있습니다! 어느 쪽이든, 꿀맛 같은 단잠을 이루실 수 있을 거예요."
+            hTheme="인기 급상승, 컬쳐 아이콘"
+            hReserveM="800"
+            hReserveW="1400"
+            hLocation="라스베이거스, 네바다, 미국,https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d206253.53244235172!2d-115.33980905696394!3d36.12488712511487!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80beb782a4f57dd1%3A0x3accd5e6d5b379a3!2z66-46rWtIOuEpOuwlOuLpCDrnbzsiqTrsqDsnbTqsbDsiqQ!5e0!3m2!1sko!2skr!4v1724377134251!5m2!1sko!2skr">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">인사이드 아웃2 세계에서 지울 수 없는 추억 만들기</div>
+                <div class="housePrice">$130</div>
+            </div>
+
+            <div class="houseContainer">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/b676fc8d-8250-4df0-a7cb-728b0486e371.jpeg?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">엑스멘 맨션에서 밤을 지새워 볼 기회</div>
+                <div class="housePrice">$150</div>
+            </div>
+
+            <div class="houseContainer">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/b16970cf-1d55-4edd-bb1f-e1735d0a228e.jpeg?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★</div>
+                <div class="houseName">슈렉의 늪지대 숙소</div>
+                <div class="housePrice">$90</div>
+            </div>
+
+            <div class="houseContainer">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/bd73f0f8-9057-4bbc-ad70-1db13eb5c03f.png?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★</div>
+                <div class="houseName">오르세 미술관에서 맞이하는 아침</div>
+                <div class="housePrice">$160</div>
+            </div>
+
+            <div class="houseContainer">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/e6b26733-2c15-47d9-b097-6968b39bb697.jpeg?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">둥둥 떠다니는 '업' 하우스에 머물러보기</div>
+                <div class="housePrice">$200</div>
+            </div>
+
+            <div class="houseContainer">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/miso/Hosting-53274539/original/365299e3-f926-47ee-bcbf-606d6a0370b9.jpeg?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">'나 홀로 집에'서 즐기는 달콤한 휴가</div>
+                <div class="housePrice">$230</div>
+            </div>
+
+            <div class="houseContainer" >
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE0ODQ2MDI1NTE4MDMzOTQ4MQ%3D%3D/original/c92634d0-4964-439a-905d-b9129af14d34.jpeg?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★</div>
+                <div class="houseName">인크레더블 히어로 슈트 직접 디자인하기</div>
+                <div class="housePrice">$210</div>
+            </div>
+
+            <div class="houseContainer">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4OTQ5ODA0MDcwMTE4Mw%3D%3D/original/4f7a276e-9995-4b32-bda6-300de0619b25.png?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">프린스의 '퍼플 레인' 하우스</div>
+                <div class="housePrice">$90</div>
+            </div>
+
+            <div class="houseContainer">
+                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyMzIwMTE1Njc3Njg0MTIzOQ%3D%3D/original/fb9dcb8d-7fa5-402f-91ae-fa2a26e9f097.png?im_w=1440&im_q=highq);"></div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">페라리 박물관에서 보내는 하룻밤</div>
+                <div class="housePrice">$300</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="btn_gotop">
+        <span class="glyphicon glyphicon-chevron-up">TOP</span>
+    </a>
+
+    <!-- footer -->
+    <!-- <footer>
+        <div>
+            FOOTER 자리
+        </div>
+    </footer> -->
+    <footer style="background-color: #f8f9fa; padding: 40px 0;">
+        <div class="container">
+            <!-- 상단 섹션: 정보 및 링크 -->
+            <div class="row">
+                <!-- 회사 정보 -->
+                <div class="col-md-3">
+                    <h5>About Us</h5>
+                    <p>
+                        We offer the best selection of guesthouses from around the world,
+                        connecting travelers with unique and affordable accommodation options.
+                    </p>
+                </div>
+    
+                <!-- 빠른 링크 -->
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Destinations</a></li>
+                        <li><a href="#">Guesthouses</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+    
+                <!-- 고객 지원 -->
+                <div class="col-md-3">
+                    <h5>Customer Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Cancellation Policy</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+    
+                <!-- 소셜 미디어 -->
+                <div class="col-md-3">
+                    <h5>Follow Us</h5>
+                    <ul class="list-unstyled d-flex">
+                        <li><a href="#" class="mr-2"><img src="https://img.icons8.com/fluent/24/000000/facebook-new.png" alt="Facebook" /></a></li>
+                        <li><a href="#" class="mr-2"><img src="https://img.icons8.com/fluent/24/000000/instagram-new.png" alt="Instagram" /></a></li>
+                        <li><a href="#" class="mr-2"><img src="https://img.icons8.com/fluent/24/000000/twitter.png" alt="Twitter" /></a></li>
+                        <li><a href="#"><img src="https://img.icons8.com/fluent/24/000000/youtube-play.png" alt="YouTube" /></a></li>
+                    </ul>
+                </div>
+            </div>
+    
+            <!-- 하단 섹션: 저작권 및 기타 정보 -->
+            <div class="row mt-4">
+                <div class="col text-center">
+                    <p>&copy; 2024 Guesthouse Explorer. All rights reserved.</p>
+                    <p><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>    
+  </body>
+</html>
