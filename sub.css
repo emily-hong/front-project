@@ -1,0 +1,374 @@
+* {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+  text-decoration: none;
+  list-style: none;
+  color: #000;
+  border-collapse: collapse;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+body {
+  position: relative;
+  width: 100%;
+}
+
+/* 헤더 */
+.header-section {
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.08) 0 1px 1px;
+}
+.header-content {
+}
+
+/* 예약하기 헤더 */
+.reserv-header-container {
+  position: sticky;
+  top: 0;
+  height: 90px;
+  box-shadow: rgba(0, 0, 0, 0.08) 0 1px 1px;
+  transition: 0.2s ease-in-out, line-height 0.2s ease-in-out;
+  z-index: 1; /* 헤더아래 내용영역 가리기위함 */
+  background-color: white;
+  display: flex;
+  justify-content: center;
+
+  border-bottom: 1px solid red;
+  display: none; /* 스크롤 이벤트 적용 필요 */
+}
+.header-content,
+.reserv-header-content {
+  width: 100%;
+  max-width: 1280px; /* 페이지 최대 넓이 */
+  padding: 0 80px;
+}
+
+/* 헤더 아래 컨테이너 */
+.container-fluid {
+  max-width: 1280px; /* 페이지 최대 넓이 */
+  position: relative;
+  padding: 0 80px;
+  /* margin-bottom: 200px; */
+}
+/* 숙소정보 영역 */
+.content {
+  width: 100%;
+  /* border: 1px solid blue; */
+}
+/* 숙소 타이틀 영역 */
+.gh-title {
+  font-size: 26px;
+}
+
+/* 숙소 이미지 영역 */
+.img-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  width: 100%;
+}
+/* 숙소 이미지 공통 속성 */
+.img-el,
+.reviewer-profile-img {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+/* 작은 이미지 공통 속성 */
+.small-img {
+  width: 272px;
+  height: 272px;
+  cursor: pointer;
+}
+/* 숙소 이미지 영역 - 왼쪽(큰 이미지) */
+.img-left-section {
+  /* width: 560px;
+  height: 560px; */
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  width: 50%;
+  cursor: pointer;
+}
+.img-left-section:hover,
+.small-img:hover {
+  filter: brightness(0.7);
+}
+
+/* 숙소 이미지 영역 - 작은 이미지들 공통 적용 */
+.img-middle-section,
+.img-right-section {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 8px;
+}
+.img-right-section div:first-child {
+  border-top-right-radius: 25px;
+}
+.img-right-section div:last-child {
+  border-bottom-right-radius: 25px;
+}
+
+/* 숙소 상세정보 영역 */
+.gh-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 100px;
+}
+
+/* 구분선 (공통) */
+.hr {
+  width: 100%;
+  margin: 20px 0; /* 기본 위아래 여백 */
+  border: 1px solid rgb(235 235 235); /* 추후에 적용예정 */
+}
+
+/* 숙소 상세정보 영역 - 왼쪽 */
+.gh-details-left {
+  width: 59%;
+}
+.gh-details-left p {
+  padding: 0;
+}
+/* 숙소 평점, 가격 예약하기 */
+.overview {
+  display: flex;
+  justify-content: space-between;
+}
+.overview-left {
+  width: 98%;
+}
+.gh-location {
+  font-size: 22px;
+}
+.gh-rating {
+  font-size: 16px;
+}
+
+/* 판매자 프로필, 자기소개 영역 */
+.host-info {
+  display: flex;
+  gap: 20px;
+}
+/* 판매자 프로필 이미지 */
+.host-img {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.host-description {
+}
+
+/* 숙소 상세정보 영역 - 오른쪽 */
+.gh-details-right {
+  width: 40%;
+  display: flex;
+  justify-content: end;
+}
+.reserv-container {
+  width: 100%;
+  border: 1px solid darkgray;
+  border-radius: 20px;
+  padding: 24px;
+}
+.price-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+/* 날짜, 인원수 선택 */
+.select-section {
+  margin-bottom: 20px;
+}
+/* 달력 input */
+#daterange {
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  vertical-align: middle;
+  height: 100%;
+  margin-bottom: 20px;
+}
+/* Date Range Picker 달력 넓이 조정 */
+.daterangepicker {
+  width: 600px; /* 달력 넓이를 600px로 설정 */
+}
+/* 달력 내부 요소의 크기 조정 (필요시) */
+.daterangepicker .calendar-table {
+  font-size: 14px; /* 폰트 크기 조정 */
+}
+/* 날짜 셀의 크기 조정 */
+.daterangepicker td,
+.daterangepicker th {
+  padding: 10px; /* 셀 패딩 조정 */
+}
+/* 예약하기 버튼 */
+.reserv-button {
+  padding: 18px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  background-color: #fd385c;
+  border-radius: 15px;
+  cursor: pointer;
+}
+/* 수수료 가격 안내 영역 */
+.fee-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+}
+
+/* 차트 */
+.chart-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 80px;
+}
+.chart-left > span,
+.chart-right > span {
+  font-weight: bold;
+  font-size: 20px;
+}
+.chart-left {
+  /* width: 400px; */
+  width: 60%;
+  height: 400px;
+}
+.chart-bar {
+  /* border: 1px solid darkgray; */
+  padding: 20px;
+  height: 90%;
+}
+.chart-right {
+  width: 400px;
+  height: 400px;
+}
+.chart-pie {
+  display: flex;
+  justify-content: center;
+  height: 90%;
+  /* border: 1px solid darkgray; */
+}
+
+/* 리뷰 영역 */
+.review-section {
+}
+.review-ul {
+  margin-bottom: 80px;
+}
+.review-li {
+  margin-bottom: 10px;
+}
+.reviewer-info {
+  display: flex;
+  gap: 20px;
+}
+.reviewer-profile-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+}
+.reivewer-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* 후기 더보기 버튼 */
+.more-button {
+  width: 170px;
+  padding: 10px 0;
+  text-align: center;
+  margin-top: 40px;
+  border: 1px solid darkgray;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* 지도 영역 */
+.gh-map-section {
+  width: 100%;
+  height: 480px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+.map {
+  height: 90%;
+  margin-bottom: 24px;
+  border: 1px solid darkgray;
+}
+.location-name {
+  font-size: 24px;
+}
+.location-info-title {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.location-info {
+  font-size: 20px;
+}
+
+/* Footer */
+footer {
+  bottom: 0;
+  left: 0;
+  height: 500px;
+  margin-top: 300px;
+  background-color: #f7f7f7;
+}
+
+/* 모달 배경 */
+.modalBackground {
+  inset: 0;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.354);
+
+  display: none; /*  기본값 */
+}
+/* 모달 컨테이너 */
+.modalContainer {
+  position: fixed;
+  width: 700px;
+  height: 500px;
+  background-color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 8px 8px 20px #666666;
+}
+/* 모달 닫기 버튼 */
+.closeButton {
+  position: absolute;
+  top: -10px;
+  right: -15px;
+  border: 1px solid darkgray;
+  background-color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+/* 모달에 들어갈 내용 컨테이너 */
+.modalContent {
+  width: 90%;
+  height: 90%;
+  border: 1px solid black;
+}
