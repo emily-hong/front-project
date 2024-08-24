@@ -35,6 +35,16 @@
     <style text="text/css">
 
         /* 테마 정보*/
+        .themes-container {
+            position: sticky;
+            top: 90px; /* header-container 바로 아래에 위치하도록 top 값 설정 */
+            z-index: 1; /* header-container 보다 낮은 z-index 설정 */
+            background-color: white; /* 배경 색상 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
+
+            border: 1px solid black;
+        }
+
         .themes {
             width: 1400px;
             height: 60px;
@@ -61,6 +71,10 @@
             height: 60%;
         }
 
+        .themeIcon:hover {
+            transform: scale(1.15); /* 1.15배 확대 */
+        }
+
         .themeName {
             height: 60%;
             font-size: small;
@@ -85,6 +99,8 @@
             height: 400px;
             padding: 15px;
             margin: 60px 13px 20px 13px;
+
+            overflow: hidden;
         }
 
         .houseContainer * {
@@ -92,12 +108,34 @@
             margin: 1px;
         }
 
-        .houseImage {
+        .houseContainer .houseImage {
+            overflow: hidden;
+        }
+        
+        .houseImageBox {
             height: 80%;
             border-radius: 10px;
             margin-bottom: 10px;
+
+            overflow: hidden;
+
+            transition: transform 0.3s ease; /* 부드러운 변화를 위해 트랜지션 추가 */
+            cursor: pointer; /* 마우스 커서 모양을 포인터로 변경 */
+        }
+
+        .houseImage {
+            border-radius: 10px;
+            height: 100%;
+            width: 100%;
             background-repeat: no-repeat;
             background-size: cover;
+
+            transition: transform 0.3s ease; /* 부드러운 변화를 위해 트랜지션 추가 */
+            cursor: pointer; /*마우스 커서 모양을 포인터로 변경*/
+        }
+
+        .houseImage:hover {
+            transform: scale(1.15); /* 1.15배 확대 */
         }
 
         .houseRate {
@@ -136,20 +174,36 @@
             text-align: center;
         }
 
+        /* .slick-slide:hover {
+            
+        } */
+
         .slick-slide img {
             margin: 0 auto;
         }
 
-        .slick-prev {
-            background-color: lightgray;
+        .slick-prev, .slick-next {
+            width: 35px;
+            height: 35px;
+            border: 1px solid black;
+            border-radius: 100%;
         }
 
-        /* footer */
-        /* footer {
-            border: 1px solid purple;
-            height: 500px;
-            background-color: rgb(250, 250, 250);
-        } */
+        .slick-prev:before {
+            content: '<';
+        }
+
+        .slick-next:before {
+            content: '>';
+        }
+
+        .slick-prev:before, .slick-next:before {
+            color: black;
+        }
+
+        .slick-prev:hover, .slick-next:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 그림자 추가 */
+        }
 
     </style>
 
@@ -180,11 +234,12 @@
         // hosueContainer(숙소 상세보기) 클릭 시 해당 숙소 정보를 localStorage 로 넘기는 로직... JSON 방식
         $('.houseContainer').on('click', function() {
             //선택된 요소에서 속성 값을 가져오기
-            var imageUrl = $(this).attr('imageUrl');
-            var imageSubUrl = $(this).attr('imageSubUrl').split(','); //쉼표로 구분된 문자열을 배열로 변환
+            var imageUrl = $(this).attr('imageUrl').split(','); //쉼표로 구분된 문자열을 배열로 변환
             var name = $(this).attr('hName');
             var rate = $(this).attr('hRate');
             var price = $(this).attr('hPrice');
+            var sellerName = $(this).attr('sellerName');
+            var sellerDescription = $(this).attr('sellerDescription');
             var description = $(this).attr('hDescription');
             var theme = $(this).attr('hTheme').split(',');
             var reserveM = $(this).attr('hReserveM');
@@ -193,11 +248,12 @@
 
             // JSON 데이터 생성
             var houseData = {
-                imageUrl: imageUrl,
-                imageSubUrl: imageSubUrl, // 이미지 배열
+                imageUrl: imageUrl, // 이미지 배열
                 name: name,
                 rate: rate,
                 price: price, 
+                sellerName: sellerName,
+                sellerDescription, sellerDescription,
                 description: description,
                 theme: theme, //카테고리 배열
                 reserveM: reserveM, 
@@ -206,7 +262,7 @@
             };
 
             // JSON 데이터를 localStorage에 저장
-            localStorage.setItem(imageUrl, JSON.stringify(houseData));
+            localStorage.setItem("houseInfo", JSON.stringify(houseData));
 
             alert("숙소 상세보기...");
         })
@@ -228,6 +284,55 @@
         /* TOP 버튼 이벤트 처리 끝*/
 
 
+        /* 테마 버튼 클릭 이벤트 처리 */
+        $('.theme').on('click', function() {
+            // 클릭된 테마 이름 가져오기 -> trim() 필요 없을지도
+            var selectedTheme = $(this).find('.themeName').text().trim();
+
+            // 모든 houseContainer를 순회
+            $('.houseContainer').each(function() {
+                // 현재 houseContainer의 hTheme 속성 값을 가져옴
+                var themeAttr = $(this).attr('hTheme');
+
+                 // hTheme 속성 값을 쉼표(,)로 구분하여 배열로 변환
+                var themes = themeAttr.split(',');
+
+                // 배열에 선택된 테마가 포함되어 있는지 확인
+                if (themes.indexOf(selectedTheme) !== -1) {
+                    // 포함되어 있으면 보여줌
+                    $(this).show();
+                } else {
+                    // 포함되어 있지 않으면 숨김
+                    $(this).hide();
+                }
+            });
+
+            /*
+            // 모든 houseContainer 요소를 선택
+            var houseContainers = $('.houseContainer');
+
+            // 컬쳐 아이콘이 포함된 houseContainer들을 필터링
+            var matchingContainers = houseContainers.filter(function() {
+                var themes = $(this).attr('hTheme');
+                console.log(themes);
+                if (themes) {
+                    var themeArray = themes.split(',').map((theme) => {
+                        return theme.trim();
+                    });
+                    return themeArray.indexOf(selectedTheme) !== -1;
+                }
+                return false;
+            });
+            
+            //필터링 된 컨테이너들에 대한 정보를 출력(test)
+            matchingContainers.each(function() {
+                alert($(this).find('.houseName').text());
+            });
+            */
+
+
+        }); // on
+
     });
     </script>
   </head>
@@ -235,182 +340,504 @@
   <body>
     <!-- 헤더 -->
     <div class="header-container">
-      <div class="header-content">헤더 로고, 검색, 로그인 버튼 등..</div>
+      <!-- <div class="header-content">헤더 로고, 검색, 로그인 버튼 등..</div> -->
+      <div class="logo">EchoTrip</div>
+      <div class="search-container">
+        <input class="search" type="text" placeholder="기억에 남을 소중한 여행의 울림을 찾으러 떠나볼까요?">
+        <button class="search-button"></button> <!-- 이모지 대신 원하는 아이콘이나 텍스트를 사용할 수 있습니다 -->
+      </div>
+      <div class="set">
+        <div class="set1"></div>
+        <div class="set2"></div>
+      </div>
     </div>
 
     <!-- 테마 선택 -->
-    <div class="themes">
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/im/pictures/mediaverse/category_icon/original/3e5243c8-4d15-4c6b-97e3-7ba2bb7bb880.png">
-                <div class="themeName">컬쳐 아이콘</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/c5a4f6fc-c92c-4ae8-87dd-57f1ff1b89a6.jpg">
-                <div class="themeName">기상천외한 숙소</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/3b1eb541-46d9-4bef-abc4-c37d77e3c21b.jpg">
-                <div class="themeName">최고의 전망</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/3726d94b-534a-42b8-bca0-a0304d912260.jpg">
-                <div class="themeName">인기 급상승</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/757deeaa-c78f-488f-992b-d3b1ecc06fc9.jpg">
-                <div class="themeName">스키 타고 출입</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/f0c5ca0f-5aa0-4fe5-b38d-654264bacddf.jpg">
-                <div class="themeName">키즈	</div>
-            </div>
-        </a>
-       
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/bcd1adc0-5cee-4d7a-85ec-f6730b0f8d0c.jpg">
-                <div class="themeName">자연</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/732edad8-3ae0-49a8-a451-29a8010dcc0c.jpg">
-                <div class="themeName">통나무집</div>
-            </div>    
-        </a>
-        
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/ca25c7f3-0d1f-432b-9efa-b9f5dc6d8770.jpg">
-                <div class="themeName">캠핑장</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/1b6a8b70-a3b6-48b5-88e1-2243d9172c06.jpg">
-                <div class="themeName">캐슬</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/8e507f16-4943-4be9-b707-59bd38d56309.jpg">
-                <div class="themeName">섬</div>
-            </div>
-        </a>
-
-        <a href="#">
-            <div class="theme">
-                <img class="themeIcon" src="https://a0.muscache.com/pictures/4221e293-4770-4ea8-a4fa-9972158d4004.jpg">
-                <div class="themeName">동굴/절벽</div>
-            </div>
-        </a>
+    <div class="themes-container">
+        <div class="themes">
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/im/pictures/mediaverse/category_icon/original/3e5243c8-4d15-4c6b-97e3-7ba2bb7bb880.png">
+                    <div class="themeName">컬쳐 아이콘</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/c5a4f6fc-c92c-4ae8-87dd-57f1ff1b89a6.jpg">
+                    <div class="themeName">기상천외한 숙소</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/3b1eb541-46d9-4bef-abc4-c37d77e3c21b.jpg">
+                    <div class="themeName">최고의 전망</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/3726d94b-534a-42b8-bca0-a0304d912260.jpg">
+                    <div class="themeName">인기 급상승</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/757deeaa-c78f-488f-992b-d3b1ecc06fc9.jpg">
+                    <div class="themeName">스키 타고 출입</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/f0c5ca0f-5aa0-4fe5-b38d-654264bacddf.jpg">
+                    <div class="themeName">키즈</div>
+                </div>
+            </a>
+           
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/bcd1adc0-5cee-4d7a-85ec-f6730b0f8d0c.jpg">
+                    <div class="themeName">자연</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/732edad8-3ae0-49a8-a451-29a8010dcc0c.jpg">
+                    <div class="themeName">통나무집</div>
+                </div>    
+            </a>
+            
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/ca25c7f3-0d1f-432b-9efa-b9f5dc6d8770.jpg">
+                    <div class="themeName">캠핑장</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/1b6a8b70-a3b6-48b5-88e1-2243d9172c06.jpg">
+                    <div class="themeName">캐슬</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/8e507f16-4943-4be9-b707-59bd38d56309.jpg">
+                    <div class="themeName">섬</div>
+                </div>
+            </a>
+    
+            <a href="#">
+                <div class="theme">
+                    <img class="themeIcon" src="https://a0.muscache.com/pictures/4221e293-4770-4ea8-a4fa-9972158d4004.jpg">
+                    <div class="themeName">동굴/절벽</div>
+                </div>
+            </a>
+        </div>
     </div>
 
     <!-- 페이지 내용 컨테이너 -->
     <div class="container-fluid">
         <div class="content">
             <div class="houseContainer"
-            imageUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=1440&im_q=highq"
-            imageSubUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/f52a6a13-c8d1-4966-ad19-e614fd4bae3c.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/dcb25748-642f-4314-9815-acaba652ca1e.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/0caa1462-bd5f-4cfa-8f9d-7012f7eb7d02.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/d25d568a-7cd3-460b-accc-94c6d71ccbde.jpeg?im_w=1440&im_q=highq"
+            imageUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/f52a6a13-c8d1-4966-ad19-e614fd4bae3c.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/dcb25748-642f-4314-9815-acaba652ca1e.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/0caa1462-bd5f-4cfa-8f9d-7012f7eb7d02.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/d25d568a-7cd3-460b-accc-94c6d71ccbde.jpeg?im_w=1440&im_q=highq"
             hName="인사이드 아웃2 세계에서 지울 수 없는 추억 만들기"
             hRate="5"
             hPrice="450,000"
-            hDescription="누군가를 보며 '머릿속을 들여다보고 싶다'고 생각하신 적 있나요? 이제 그 궁금증을 말끔히 해결해 보세요! 사상 최초로 라일리의 감정 컨트롤 본부에서 하룻밤을 보낼 기회가 열립니다. 정말 근사하죠?! 네, 그리고 예상하시는 것처럼 라일리의 감정을 직접 조절하실 수 있습니다. 기쁨, 슬픔, 버럭 등 익숙한 감정은 물론, 제가 미처 생각지도 못했던 새로운 감정들도요. 아무튼 우리 라일리, 잘 부탁드려요. 제가 정말 사랑하거든요!
-
+            sellerName="Joy"
+            sellerDescription="감정"
+            hDescription="
+            [상세 설명]
+            <br/><br/>
+            누군가를 보며 '머릿속을 들여다보고 싶다'고 생각하신 적 있나요? 이제 그 궁금증을 말끔히 해결해 보세요! 사상 최초로 라일리의 감정 컨트롤 본부에서 하룻밤을 보낼 기회가 열립니다. 정말 근사하죠?! 네, 그리고 예상하시는 것처럼 라일리의 감정을 직접 조절하실 수 있습니다. 기쁨, 슬픔, 버럭 등 익숙한 감정은 물론, 제가 미처 생각지도 못했던 새로운 감정들도요. 아무튼 우리 라일리, 잘 부탁드려요. 제가 정말 사랑하거든요!
+            <br/><br/>
             프로그램
+            <br/><br/>
             제 눈에 안경일지 모르지만, 저희 본부는 최고로 멋져요! 감정 제어판을 조작하지 않을 때 감정들이 어떻게 생활하는지 가까이에서 지켜보세요. 이번에 새롭게 합류한 여러 감정도 만나실 수 있어요. 새로운 감정들은 뭐랄까... 개성이 참으로 뚜렷하다고 해두죠. 어쨌든, 하루 동안 여러분 머릿속 감정들도 짜릿한 시간을 보낼 거예요. 놀라움 가득한 하루를 기대해 주세요.
-            
+            <br/><br/>
             특히 '핵심 기억'을 저장할 구슬을 어떤 모습으로 디자인하여 만드실지 벌써 궁금하네요! 단, 라일리의 기억 구슬은 하나라도 떨어트리지 않도록 주의해 주세요. 부탁드릴게요! • 라일리의 감정 컨트롤 본부 책임자가 되어 모든 감정을 갖고 놀아보세요. 음, '갖고 놀다'라는 표현은 적절하지 않은 것 같네요. 최대한 즐거운 시간을 보내시되, 그러니까... 침착함을 유지하시면 좋을 것 같아요. 아니에요, 제 말을 마음에 너무 담아두지 마세요. 전혀 걱정되지 않아요.
-            
+            <br/><br/>
             • 감정이 가득 담긴 보물찾기 게임에서 여행 가방을 살펴보며 감정의 향연을 만끽해 보세요! 저는 보물찾기 게임도, 감정도 정말 좋아해요! 그러니 금상첨화죠. 단서를 끝까지 따라가다 보면 비밀을 발견하실지도 몰라요. 더 이상의 설명은 생략하죠.
-            
+            <br/><br/>
             • 특별한 피자 배달 서비스도 준비했습니다. 피자는 떠올리기만 해도 행복해지는 음식이니까요. 토핑마다 의미하는 감정이 다르답니다! 브로콜리를 보면 어떤 감정이 떠오르세요? 맞아요, 바로 까칠함이에요. (생각만 해도 속이 안 좋아요.)
-            
+            <br/><br/>
             • 라일리가 가장 좋아하는 스포츠, 하키를 거실에서 해 보세요. 스포츠 팬 여러분을 위해 제가 신경 좀 썼죠! 그런데 실제 하키는 아니고 에어 하키 게임이에요. 생생한 긴장감과 짜릿함까지, 모두 그대로 느끼실 수 있어요. 경기 방식이 살짝 다를 뿐이죠!
-            
+            <br/><br/>
             • 감정 컨트롤 본부의 기억 저장소에서 영감을 받아 나만의 기억 구슬을 만들어 보세요! 원래는 안 되지만 이번만 특별히 기억 구슬을 집에 가져가실 수 있도록 허락해 드릴게요.
-            
+            <br/><br/>
             • 잠자리에 들 준비가 되셨나요? 저와 같은 사람이라면(즐거움이 넘치는 사람 말이죠, 안녕하세요), 별빛으로 가득한 제 천상의 원더랜드를 제공해 드릴 수 있습니다. 또는, 할 일 목록이나 꼼꼼하게 관리된 달력으로 무장하지 않고는 걱정으로 잠을 잘 수 없는 사람에게 딱 맞는 침실도 마련되어 있습니다! 어느 쪽이든, 꿀맛 같은 단잠을 이루실 수 있을 거예요."
-            hTheme="인기 급상승, 컬쳐 아이콘"
+            hTheme="인기 급상승,컬쳐 아이콘"
             hReserveM="800"
             hReserveW="1400"
-            hLocation="라스베이거스, 네바다, 미국,https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d206253.53244235172!2d-115.33980905696394!3d36.12488712511487!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80beb782a4f57dd1%3A0x3accd5e6d5b379a3!2z66-46rWtIOuEpOuwlOuLpCDrnbzsiqTrsqDsnbTqsbDsiqQ!5e0!3m2!1sko!2skr!4v1724377134251!5m2!1sko!2skr">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=1440&im_q=highq);"></div>
+            hLocation="라스베이거스 네바다 미국,https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d206253.53244235172!2d-115.33980905696394!3d36.12488712511487!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80beb782a4f57dd1%3A0x3accd5e6d5b379a3!2z66-46rWtIOuEpOuwlOuLpCDrnbzsiqTrsqDsnbTqsbDsiqQ!5e0!3m2!1sko!2skr!4v1724377134251!5m2!1sko!2skr,당연히 라일리의 머릿속이죠! 아, 지금 라일리는 어디에 있냐고요? 라스베이거스에서 하키 토너먼트에 참가 중인 것 같아요. 하키라는 스포츠 특성상 여행할 일이 정말 많은데요. 제게 딱 맞죠. 라일리 부모님도 분명 좋아하실 거예요!">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★★★</div>
                 <div class="houseName">인사이드 아웃2 세계에서 지울 수 없는 추억 만들기</div>
                 <div class="housePrice">$130</div>
             </div>
 
-            <div class="houseContainer">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/b676fc8d-8250-4df0-a7cb-728b0486e371.jpeg?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/b676fc8d-8250-4df0-a7cb-728b0486e371.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/862336a0-9c76-41e0-a350-77b345b6548f.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/97d5fe8e-c19d-4f61-b9aa-11895feaacbe.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/f39f4ad7-e951-464c-bfde-842e8ac3ea18.jpeg?im_w=1440&im_q=highq, https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/8b6d7a9d-92bf-449b-bc68-3742c6628a13.jpeg?im_w=1440&im_q=highq"
+            hName="엑스멘 맨션에서 밤을 지새워 볼 기회"
+            hRate="5"
+            hPrice="360,000"
+            sellerName="Jubilee"
+            sellerDescription="(당연히) 슈퍼호스트"
+            hDescription="
+            [상세 설명]
+            <br/><br/>
+            뮤턴트라면 주목하세요! 뮤턴트가 아니더라도 남들과 조금 다르다고 느끼는 사람이라면 자비에가 설립한 뮤턴트를 위한 고등 교육기관에서 나만의 특별한 초능력을 발견해 보세요. 저희는 뮤턴트 신입생을 받을 만반의 준비를 갖췄답니다. 최고의 오리엔테이션이 여러분을 기다리고 있을 거예요!
+            <br/><br/>
+            프로그램
+            엑스 맨션은 뮤턴트들이 자신의 초능력에 눈을 뜨고 이를 다루는 법을 배우기에 최적의 장소입니다. 숙박 동안 훈련을 받거나 멋진 실험을 하고, 비밀 임무에 대한 브리핑을 받고 학급 친구들과 함께 촬영을 하는 등 마음껏 즐기실 수 있어요! 지치셨다면 제 방이나 울버린의 방, 또는 기숙사 내 다른 방에 자러 가셔도 좋아요.
+            <br/><br/>
+            뮤턴트들과 함께하는 하룻밤이라니, 정말 설레네요!
+            <br/><br/>
+            • 제가 신입생 오리엔테이션을 진행할 거예요. 더 흥미진진한 다음 순서를 위해 오리엔테이션은 길게 하지 않을게요.
+            <br/><br/>
+            • 비스트 교수님의 별난 실험실로 여러분을 초대합니다! 과학자들의 놀이터 같은 이곳에서 뮤턴트 에너지 드링크로 원기를 보충해 보세요. 
+            <br/><br/>
+            • 데인저 룸에서는 교수님들과 함께 전투 수업이 진행됩니다. 혹시라도 헬파이어 클럽이 공격할 때를 대비해 전투 기술을 갈고닦는 시간이죠!
+            <br/><br/>
+            • 작전상황실에서 세레브로 헬맷을 쓰고 나만의 뮤턴트 초능력을 찾아보세요. 스톰처럼 오메가 레벨의 최강 뮤턴트일 수도 있잖아요! 
+            <br/><br/>
+            • 집으로 돌아가기 전에는 이번 체험을 통해 새로 발견한 초능력을 돌아보고, 공식 수료증을 받고 학급 사진을 찍는 시간을 가질 거예요. 
+            <br/><br/>
+            • 조식으로는 갬빗이 초능력을 사용해 튀긴 베녜가 제공됩니다. 완전히 제 취향이에요!"
+            hTheme="컬쳐 아이콘"
+            hReserveM="1200"
+            hReserveW="500"
+            hLocation="뉴캐슬 뉴욕 미국, https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96077.00124164361!2d-73.87003419654407!3d41.191115035003214!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2b904b50f5b49%3A0xca03869bbc113bde!2z66-46rWtIOuJtOyalSDribTsupDsiqw!5e0!3m2!1sko!2skr!4v1724380090443!5m2!1sko!2skr">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTg2NzMzNDc0MDk1Nzg4NA%3D%3D/original/b676fc8d-8250-4df0-a7cb-728b0486e371.jpeg?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★★★</div>
                 <div class="houseName">엑스멘 맨션에서 밤을 지새워 볼 기회</div>
                 <div class="housePrice">$150</div>
             </div>
 
-            <div class="houseContainer">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/b16970cf-1d55-4edd-bb1f-e1735d0a228e.jpeg?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl="https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/b16970cf-1d55-4edd-bb1f-e1735d0a228e.jpeg?im_w=2560&im_q=highq,
+            https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/58387bc5-15cf-4be7-bb18-56a9081326fb.jpeg?im_w=1440&im_q=highq,
+            https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/e504263d-6a89-4124-8b3b-7483d658a29e.jpeg?im_w=1440&im_q=highq,
+            https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/c9a998fa-2f64-4576-a8e7-025cf2f08e66.jpeg?im_w=1440&im_q=highq,
+            https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/d9520bdd-c46e-433d-a467-372a2157cb43.jpeg?im_w=1440&im_q=highq"
+            hName="슈렉의 늪지대 숙소"
+            hRate="4"
+            hPrice="190,000"
+            sellerName="Donkey"
+            sellerDescription="슈렉 절친"
+            hDescription="
+            [상세 설명]
+            <br/><br/>
+            스코틀랜드 하일랜드 언덕에 자리 잡은 슈렉의 늪지는 그루터기로 가득한 한적한 곳이라, 혼자만의 시간을 즐기는 괴물에게 그야말로 완벽한 안식처인데요. 슈렉 팬 몇 명에게만 사상 최초로 이곳을 공개합니다. 이번 핼러윈에 슈렉이 집을 비우는 동안 제가 이곳을 대신 돌봐주기로 했거든요. 동화 속 세상으로 여러분을 초대하게 되어 가슴이 정말 벅차네요! 아, 그리고 '주의' 표지판은 신경 쓰지 마세요. 그냥 장식용일 거예요.
+            <br/><br/>
+            프로그램
+            예약은 10월 13일 오후 6시(영국 일광절약 시간대)에 시작되며, 숙박일은 10월 27일~29일(2박), 게스트 정원은 3명입니다. 
+            <br/><br/>
+            스코틀랜드 고원의 숲 깊숙이 자리 잡고 있으며 슈렉이 수년 동안 쌓아온 아늑한 안락함이 강조된 이 늪지대는 다른 곳에서는 찾아볼 수 없는 휴양지입니다. 이끼로 뒤덮이고 진흙으로 가득하며 흙탕물이 있는 이곳은 바쁜 일상에서 벗어나 아름다운 자연과 교감하기에 완벽한 안식처랍니다.
+            <br/><br/>
+            이 장엄하고 한적한 늪지대에 머무르게 될 게스트는 다음과 같은 경험을 즐길 수 있습니다.<br/>
+            - '귀지로 만든 초'의 은은한 촛불 아래 즐기는 휴식<br/>
+            - 파르페 먹기(파르페 싫어하는 사람은 없잖아요!)<br/>
+            - 모닥불 주변에 모여 앉아 늦은 밤까지 이야기 나누기<br/>
+            - 갓 구워낸 따끈따끈한 와플이 푸짐하게 제공되는 아침 식사<br/>
+            - 유명한 슈렉의 야외 화장실에서 만끽하는 완벽한 프라이버시<br/>
+            <br/><br/>
+            평생 간직할 어린 시절의 추억을 기리기 위해, 에어비앤비는 홉스코치 어린이 자선재단(HopScotch Children’s Charity)에 기부금을 전달합니다. 홉스코치 어린이 자선재단은 스코틀랜드 취약 계층의 불우아동이 여행을 통해 즐거운 시간을 보내고 더욱 성장할 수 있도록 여행을 선물하는 사업을 펼치고 있습니다.
+            <br/><br/>
+            기타 주의사항
+            숙소에 도착해 체크인하면 숙소 컨시어지가 숙소를 안내하고 식사를 준비하는 등 게스트가 편안하게 머무르실 수 있도록 도와드릴 것입니다. 화장실, 세면대, 샤워 시설은 슈렉의 늪지대 숙소에서 약 20미터 떨어진 곳에 있습니다.
+            <br/><br/>
+            예약 규칙:<br/>
+            본 숙소는 활성화된 에어비앤비 프로필을 보유하고 있으며 에어비앤비 이용 약관 및 개인정보 처리방침에 동의하고 이용 기록이 우수한 게스트만 예약할 수 있습니다. <br/>
+            - 동반 일행은 5세 이상이어야 합니다. <br/>
+            - 게스트는 정부 발급 신분증을 제시해야 합니다.<br/>
+            - 예약 요청을 보낼 때 내용을 빠짐없이 작성해야 합니다. 특히 동반 게스트에 대한 정보를 호스트에게 알려주세요. <br/>
+            - 게스트는 에어비앤비가 공공 기록을 조회할 수 있다는 사실을 이해합니다.<br/>
+            - 에어비앤비와 호스트는 각자의 재량에 따라 비즈니스나 평판에 악영향을 미칠 수 있다고 판단되는 예약 요청을 거절할 권리를 갖습니다.<br/>
+            <br/><br/>
+            이 2박 3일 숙박은 콘테스트가 아니며, 스코틀랜드까지의 왕복 교통편은 게스트가 부담해야 합니다. 이 숙소는 아드베리키 에스테이트(Ardverikie Estate)에서 독립적으로 소유하고 운영합니다. 유니버설 스튜디오 라이선싱 LLC는 드림웍스 애니메이션의 슈렉과 동키 캐릭터 사용에 대한 권리를 제공한 대가로 보상을 받았습니다."
+            hTheme="자연,컬쳐 아이콘,통나무집"
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="하일랜드의회지구 스코틀랜드 영국,https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4848.204236573261!2d-3.1689854736619996!3d55.94651670742411!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4887b979c8b4febf%3A0x98aa0e77e2bfa9a8!2sArthur&#39;s%20Seat!5e0!3m2!1sko!2skr!4v1724393100992!5m2!1sko!2skr,모든 것에서 멀리 떨어진 슈렉의 늪지대는 스코틀랜드 외에는 어디에서도 볼 수 없는 한적한 아름다움을 간직하고 있습니다. 대자연이 직접 만든 늪과 그 주변의 숲은 구불구불한 산책로, 끝없이 펼쳐진 침엽수 아래 그림 같은 피크닉 장소, 별을 관측하기에 완벽한 탁 트인 하늘 등 다양한 야외 활동을 즐길 수 있는 곳입니다.">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/miso/Hosting-881808599061267756/original/b16970cf-1d55-4edd-bb1f-e1735d0a228e.jpeg?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★★</div>
                 <div class="houseName">슈렉의 늪지대 숙소</div>
                 <div class="housePrice">$90</div>
             </div>
 
-            <div class="houseContainer">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/bd73f0f8-9057-4bbc-ad70-1db13eb5c03f.png?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/bd73f0f8-9057-4bbc-ad70-1db13eb5c03f.png?im_w=2560&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/ee71281a-74af-4200-882a-53c2c8d96a42.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/b90b03a6-8bff-46f3-812e-21bf3636104f.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/6cf06751-2105-4462-9d7c-86db287fe20c.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/44b9a499-bb02-4048-8748-23104627d664.jpeg?im_w=1440&im_q=highq"
+            hName="오르세 미술관에서 맞이하는 아침"
+            hRate="4"
+            hPrice="170,000"
+            sellerName="Mathieu Lehanneur"
+            sellerDescription="전방위 디자이너"
+            hDescription="
+            [상세 설명]
+            <br/><br/>
+            오르세 박물관을 상징하는 시계실이 역사상 처음으로 단 하룻밤 동안 여러분의 침실로 변신합니다. 제가 직접 로맨틱하면서도 현대적이고, 친근하면서도 호화로운 공간으로 연출했답니다. 인상파 화가들의 작품에 둘러싸여 파리에서 가장 아름다운 밤을 보내며 파리 2024 올림픽대회 개막식을 관람해 보세요.
+            <br/><br/>
+            프로그램
+            <br/><br/>
+            125년 전 파리 한복판에 자리한 기차역이었던 오르세 미술관은 현재 세계에서 가장 훌륭한 박물관 중 하나로 거듭나 최대 규모의 인상주의 회화 작품 컬렉션을 소장하고 있습니다. 미술관 내외부에서 모두 볼 수 있는 상징적인 시계 창문을 포함하여 기존의 건축 양식이 모두 보존되어 있습니다.
+            <br/><br/>
+            마치 한 순간에 사라지는 신비스러운 유령처럼 하룻밤 동안 시계실이 여러분의 침실이 됩니다. 베르사유 쪽모이 세공 마룻바닥부터 아치형 천장까지 나무 패널로 꾸며진 이 공간은 여러분이 꿈꾸던 환상 속 공간과도 같습니다. 대형 유리와 강철 시계를 통해 도시의 멋진 전망을 감상하며 파리지앵이 되어 아름다운 밤을 더욱 즐기실 수 있습니다. 지면에서 떨어진 높은 상공에서 편안히 누울 수 있는 침대가 이번 숙박의 핵심입니다. 두 개의 빛나는 세라믹 꽃이 침대의 헤드보드를 장식하고, 널찍한 곡선형 소파가 프라이빗한 라운지 분위기를 연출합니다.
+            <br/><br/>
+            제가 디자인한 파리 2024 올림픽 성화는 전용 골방에 전시되어 있으며, 마주한 공간에 놓인 패딩 펀칭 백으로 운동을 즐기며 직접 올림픽 대회에 참가하는 느낌도 받으실 수 있습니다! 가장 아름다운 객실에는 가장 아름다운 발코니가 있어야 하므로 박물관의 넓은 테라스도 쓰실 수 있도록 미리 마련해 드립니다. 곧 올림픽이 열리는 파리를 오롯이 즐겨보세요.
+            <br/><br/>
+            파리에서의 꿈 같은 저녁이 펼쳐집니다.
+            <br/><br/>
+            • 오르세 미술관 옥상 테라스에서 숨 막히게 아름다운 센강의 전경과 함께 펼쳐지는 올림픽 개막식을 관람해 보세요.
+            <br/>
+            • 박물관의 인상주의 작품 컬렉션에 대한 전용 입장권이 제공되며, 대중에게 공개되지 않은 숨은 공간까지 방문하실 수 있습니다.
+            <br/>
+            • 저녁 식사로는 프랑스 미식을 제대로 경험할 수 있는 최고급 정찬 코스가 제공됩니다. 
+            <br/>
+            • 제가 직접 디자인한 시계탑 침실의 '떠 있는' 침대에서 편안하고 특별한 하룻밤을 보내보세요."
+            hTheme="인기 급상승"
+            hReserveM="700"
+            hReserveW="1100"
+            hLocation="파리 일드프랑스 프랑스,https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83998.96777890918!2d2.26463467897083!3d48.85882549220155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e1f06e2b70f%3A0x40b82c3688c9460!2z7ZSE656R7IqkIO2MjOumrA!5e0!3m2!1sko!2skr!4v1724394219951!5m2!1sko!2skr,오르세 미술관은 1986년부터 마네, 모네, 드가, 르누아르, 쇠라, 고갱, 반 고흐 등 방대한 인상주의 및 후기 인상주의 화가들의 작품을 소장하고 있어 예술 애호가로부터 사랑을 받고 있습니다. 19세기에 센 강변에 지어져 수많은 사람의 발길이 닿았던 오르세역(Gare d'Orsay)을 개조한 오르세 미술관은 파리 2024 올림픽대회 개막식을 관람하기에 최적의 위치에 자리하고 있습니다. 오르세 미술관 시계탑 내부에 프랑스만의 문화와 감성을 담아 세심하게 연출한 객실에 머물며 '빛의 도시' 파리에서 펼쳐지는 역사적인 순간을 오롯이 감상해 보세요.">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNTQ0NTEyMzEwMTI3NDg1MQ%3D%3D/original/bd73f0f8-9057-4bbc-ad70-1db13eb5c03f.png?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★★</div>
                 <div class="houseName">오르세 미술관에서 맞이하는 아침</div>
                 <div class="housePrice">$160</div>
             </div>
 
-            <div class="houseContainer">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/e6b26733-2c15-47d9-b097-6968b39bb697.jpeg?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/e6b26733-2c15-47d9-b097-6968b39bb697.jpeg?im_w=2560&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/55a2777a-fc80-4d7b-af05-a9f737ff8661.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/c6e8b725-62c3-45d8-a9bb-33dd6b62df99.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/ba2f3fdb-57c8-48c3-81bc-9f9b79a90b42.jpeg?im_w=1440&im_q=highq,https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/3678fa10-80f2-49ba-bff4-657eecf0cbc5.jpeg?im_w=1440&im_q=highq"
+            hName="둥둥 떠다니는 '업' 하우스에 머물러보기"
+            hRate="5"
+            hPrice="240,000"
+            sellerName="Carl Fredricksen"
+            sellerDescription="은퇴한 풍선 판매원"
+            hDescription="
+            [상세 설명]
+            <br/><br/>
+            항상 방문객을 반기지는 않아요. 하지만 더그와 저만 남고 보니 누군가 방문하는 것도 꽤 좋을 거란 생각을 하게 되었습니다. 그래서 여러분을 저희집에 초대합니다. 제 아내 엘리와 함께 손수 꾸민 곳이죠. 이곳은 제 인생 최고의 모험을 경험한 곳이예요. 인생 최고의 모험은 언제나 사랑하는 이와 함께하는 시간이라는 것을 배우게 된 곳이기도 하지요. 친구들과 함께 이곳에 머무르면서 나만의 모험 연대기를 시작해 보세요. 떠나기 전 풍선집이 하늘 높이 날아가는 진풍경도 구경하실 수 있답니다.
+            <br/><br/>
+            프로그램<br/>
+            우선 집 안을 둘러보세요. 하지만 아무거나 만지지는 마시고요. 방금 싹 정리를 했거든요! 꽤 깔끔하죠? 예전에는 집이 정말 지저분했는데, 엘리와 함께 말끔하게 꾸몄답니다. 함께 여행하며 얻은 물건으로 장식했고요. 저는 이제 모험을 즐기기에는 조금 나이가 들었지만, 여전히 세상은 모험할 곳으로 가득하죠. 특히 이곳에 머무르면 그 기회가 더 많을 거예요. 하지만 여러분께 집을 내어드릴 수 있는 시간은 딱 하룻밤뿐이라는 것을 잊지 마세요! 이곳에 머물 행운을 잡게 된다면 배지, 여행 기념품, 장식품 등 나만의 모험을 떠올리게 하는 물건을 수집할 수 있습니다. 제가 도울 수 있을 거예요. 엘리가 최고의 모험가였던 만큼, 제 기대치는 사실 굉장히 높아요. 주니어 윌더니스 익스플로러(Junior Wilderness Explorers) 자격으로 숙소에 도착해 작은 모험을 마치면 이 배지를 획득하게 됩니다. 
+            <br/><br/>
+            • 관리인: 우편물을 가져오고 집을 청소하는 등 집안일을 해주세요. 누군가는 꼭 해야 하는 일이나 여러분에게 맡겨보도록 하죠.
+            <br/><br/>
+            • 공상가: 단체 활동을 하며 나만의 어드벤처 북을 만드세요. 전 단체 활동을 좋아하지 않았지만 여러분은 좋아하시면 좋겠군요. 
+            <br/><br/>
+            • 집순이나 집돌이: 점심 도시락을 싸서 잔디밭에서 피크닉을 즐겨보세요. 재밌다고 듣긴 했는데 저야 잘 모르죠. 
+            <br/><br/>
+            • 모험가: 해가 떠 있는 동안 야생으로 여행을 떠나보세요.
+            <br/><br/>
+            • 별 관찰자: 잔디밭에 모여 밤하늘을 구경하세요. 엘리가 가장 좋아하는 활동 중 하나였답니다.• 잠꾸러기: 전에 떠났던 모험을 되돌아보며 늘어지게 늦잠을 잔 후 아침 소풍을 떠나세요.
+            <br/><br/>
+            • 아침형 인간: 세상에서 가장 멋진 아침 식사인 브랜 플레이크를 즐겨보세요. 그런 다음 신나는 야외 활동을 즐기고, 떠나기 전에 특별한 놀라움을 다시 한번 경험하세요.
+            <br/><br/>
+            기타 주의사항<br/>
+            **영화 '업' 개봉 15주년을 기념하기 위해 에어비앤비가 칼과 엘리의 집을 현실 세계로 가져왔습니다. 또 다른 모험을 즐기고 싶다면 6월 중순 전 세계 극장에서 개봉하는 '인사이드 아웃 2'를 만나보세요.**
+            "
+            hTheme="컬쳐 아이콘,인기 급상승,최고의 전망,기상천외한 숙소"
+            hReserveM="1500"
+            hReserveW="1400"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjE4NTg5MzIzNjI0NjI2MA%3D%3D/original/e6b26733-2c15-47d9-b097-6968b39bb697.jpeg?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★★★</div>
                 <div class="houseName">둥둥 떠다니는 '업' 하우스에 머물러보기</div>
                 <div class="housePrice">$200</div>
             </div>
 
-            <div class="houseContainer">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/miso/Hosting-53274539/original/365299e3-f926-47ee-bcbf-606d6a0370b9.jpeg?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl="https://a0.muscache.com/im/pictures/84c8279b-e142-4a0a-b782-1eeefdef6036.jpg?im_w=1200,https://a0.muscache.com/im/pictures/f26be6c3-2326-4bcb-84c2-f4c2fb1f9778.jpg?im_w=720,https://a0.muscache.com/im/pictures/fa099fc0-6b17-4c50-ab7d-2a794bc033d4.jpg?im_w=720,https://a0.muscache.com/im/pictures/aeaf9b55-f6af-4ac9-a5ea-264f83f4b962.jpg?im_w=720,https://a0.muscache.com/im/pictures/a457d834-c706-4f74-82c9-4f0403f7d9da.jpg?im_w=720"
+            hName="미국 알래스카 앵커리지"
+            hRate="5"
+            hPrice="306,000"
+            sellerName="Kelly"
+            sellerDescription="슈퍼호스트/호스팅 경력 8년"
+            hDescription="
+            [상세 설명]
+            <br/><br/>
+            알예스카 기지에서 아래 또는 위쪽 산악 리프트로 쉽게 이동할 수 있는 이 자전거 또는 스키 인/아웃 콘도를 즐겨보세요.
+            <br/><br/>
+            1층에 위치한 이 아늑한 콘도에는 전용 출입구가 있으며, 열쇠가 없고 앞에 주차할 수 있습니다. 자세한 사항은 사진을 참조하세요. 
+            <br/><br/>
+            침대 1개/욕실 1개, 침대 3개로 5인 가족을 만족시킬 수 있습니다. 
+            <br/><br/>
+            1박에 $ 210에 임대합니다. Elec.Fireplace, SmartTV, DBL Vanity, Wifi, Micro/DW/Toaster가 있습니다. 
+            <br/><br/>
+            반려동물 동반 불가. 이 단지는 공용 공간의 욕조와 샤워실, 사우나, 당구대, W/D (짐당 $ 2) 도 제공합니다.
+            "
+            hTheme="스키 타고 출입,최고의 전망"
+            hReserveM="1300"
+            hReserveW="880"
+            hLocation="앵커리지 알래스카 미국, https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d493508.17516723607!2d-150.09960708213316!3d61.107259798945414!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x56c8917604b33f41%3A0x257dba5aa78468e3!2z66-46rWtIOyVjOuemOyKpOy5tCDslbXsu6Trpqzsp4A!5e0!3m2!1sko!2skr!4v1724394622141!5m2!1sko!2skr, 콘도는 마을 한복판에 있습니다. 볼거리와 즐길거리가 많은 높은 분위기의 공간입니다. 리프트, 베이커리, 아트갤러리, 바 앤 그릴, 리큐어 스토어, 기프트숍 및 레스토랑까지 도보로 단 1분 거리에 있습니다. 자전거/스키 대여 및 리프트 구입까지 도보로 5분 거리에 있습니다. 여름철에는 근처에 멋진 등산로가 많습니다. 마을 전체를 이용할 수 있는 이 콘도에는 몇 야드에 정차하는 무료 마을 셔틀이 있습니다.">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/84c8279b-e142-4a0a-b782-1eeefdef6036.jpg?im_w=1200);"></div>
+                </div>  
                 <div class="houseRate">★★★★★</div>
-                <div class="houseName">'나 홀로 집에'서 즐기는 달콤한 휴가</div>
+                <div class="houseName">미국 알래스카 앵커리지</div>
                 <div class="housePrice">$230</div>
             </div>
 
-            <div class="houseContainer" >
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE0ODQ2MDI1NTE4MDMzOTQ4MQ%3D%3D/original/c92634d0-4964-439a-905d-b9129af14d34.jpeg?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl=""
+            hName=""
+            hRate=""
+            hPrice=""
+            sellerName=""
+            sellerDescription=""
+            hDescription="
+            [상세 설명]
+            "
+            hTheme=""
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE0ODQ2MDI1NTE4MDMzOTQ4MQ%3D%3D/original/c92634d0-4964-439a-905d-b9129af14d34.jpeg?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★</div>
                 <div class="houseName">인크레더블 히어로 슈트 직접 디자인하기</div>
                 <div class="housePrice">$210</div>
             </div>
 
-            <div class="houseContainer">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4OTQ5ODA0MDcwMTE4Mw%3D%3D/original/4f7a276e-9995-4b32-bda6-300de0619b25.png?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl=""
+            hName=""
+            hRate=""
+            hPrice=""
+            sellerName=""
+            sellerDescription=""
+            hDescription="
+            [상세 설명]
+            "
+            hTheme=""
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4OTQ5ODA0MDcwMTE4Mw%3D%3D/original/4f7a276e-9995-4b32-bda6-300de0619b25.png?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★★★</div>
                 <div class="houseName">프린스의 '퍼플 레인' 하우스</div>
                 <div class="housePrice">$90</div>
             </div>
 
-            <div class="houseContainer">
-                <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyMzIwMTE1Njc3Njg0MTIzOQ%3D%3D/original/fb9dcb8d-7fa5-402f-91ae-fa2a26e9f097.png?im_w=1440&im_q=highq);"></div>
+            <div class="houseContainer"
+            imageUrl=""
+            hName=""
+            hRate=""
+            hPrice=""
+            
+            hDescription="
+            [상세 설명]
+            "
+            hTheme=""
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyMzIwMTE1Njc3Njg0MTIzOQ%3D%3D/original/fb9dcb8d-7fa5-402f-91ae-fa2a26e9f097.png?im_w=1440&im_q=highq);"></div>
+                </div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">페라리 박물관에서 보내는 하룻밤</div>
+                <div class="housePrice">$300</div>
+            </div>
+
+            <div class="houseContainer"
+            imageUrl=""
+            hName=""
+            hRate=""
+            hPrice=""
+            sellerName=""
+            sellerDescription=""
+            hDescription="
+            [상세 설명]
+            "
+            hTheme=""
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE0ODQ2MDI1NTE4MDMzOTQ4MQ%3D%3D/original/c92634d0-4964-439a-905d-b9129af14d34.jpeg?im_w=1440&im_q=highq);"></div>
+                </div>
+                <div class="houseRate">★★★</div>
+                <div class="houseName">인크레더블 히어로 슈트 직접 디자인하기</div>
+                <div class="housePrice">$210</div>
+            </div>
+
+            <div class="houseContainer"
+            imageUrl=""
+            hName=""
+            hRate=""
+            hPrice=""
+            sellerName=""
+            sellerDescription=""
+            hDescription="
+            [상세 설명]
+            "
+            hTheme=""
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4OTQ5ODA0MDcwMTE4Mw%3D%3D/original/4f7a276e-9995-4b32-bda6-300de0619b25.png?im_w=1440&im_q=highq);"></div>
+                </div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">프린스의 '퍼플 레인' 하우스</div>
+                <div class="housePrice">$90</div>
+            </div>
+
+            <div class="houseContainer"
+            imageUrl=""
+            hName=""
+            hRate=""
+            hPrice=""
+            
+            hDescription="
+            [상세 설명]
+            "
+            hTheme=""
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyMzIwMTE1Njc3Njg0MTIzOQ%3D%3D/original/fb9dcb8d-7fa5-402f-91ae-fa2a26e9f097.png?im_w=1440&im_q=highq);"></div>
+                </div>
+                <div class="houseRate">★★★★★</div>
+                <div class="houseName">페라리 박물관에서 보내는 하룻밤</div>
+                <div class="housePrice">$300</div>
+            </div>
+
+            <div class="houseContainer"
+            imageUrl=""
+            hName=""
+            hRate=""
+            hPrice=""
+            
+            hDescription="
+            [상세 설명]
+            "
+            hTheme=""
+            hReserveM="900"
+            hReserveW="1050"
+            hLocation="">
+                <div class="houseImageBox">
+                    <div class="houseImage" style="background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyMzIwMTE1Njc3Njg0MTIzOQ%3D%3D/original/fb9dcb8d-7fa5-402f-91ae-fa2a26e9f097.png?im_w=1440&im_q=highq);"></div>
+                </div>
                 <div class="houseRate">★★★★★</div>
                 <div class="houseName">페라리 박물관에서 보내는 하룻밤</div>
                 <div class="housePrice">$300</div>
@@ -423,11 +850,6 @@
     </a>
 
     <!-- footer -->
-    <!-- <footer>
-        <div>
-            FOOTER 자리
-        </div>
-    </footer> -->
     <footer style="background-color: #f8f9fa; padding: 40px 0;">
         <div class="container">
             <!-- 상단 섹션: 정보 및 링크 -->
@@ -486,5 +908,8 @@
             </div>
         </div>
     </footer>    
+    <!-- footer -->
+
+
   </body>
 </html>
