@@ -4,7 +4,7 @@
   padding: 0px;
   text-decoration: none;
   list-style: none;
-  color: #000;
+
   border-collapse: collapse;
   font-family: "Noto Sans KR", sans-serif;
 }
@@ -12,14 +12,39 @@
 body {
   position: relative;
   width: 100%;
+  overflow: hidden;
+}
+
+/* 영상 배경화면 */
+video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
 }
 
 /* 헤더 */
 .header-section {
-  height: 90px;
+  position: absolute;
+  color: white;
   display: flex;
   justify-content: center;
-  box-shadow: rgba(0, 0, 0, 0.08) 0 1px 1px;
+  align-items: center;
+  width: 100%;
+  z-index: 1;
+  height: 100px;
+  font-size: 40px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1),
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.6),
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.1)
+  );
 }
 .header-content {
 }
@@ -42,27 +67,42 @@ body {
 .header-content,
 .reserv-header-content {
   width: 100%;
-  max-width: 1280px; /* 페이지 최대 넓이 */
-  padding: 0 80px;
+  max-width: 1140px;
+  /* max-width: 1400px; */
+  /* padding: 0 80px; */
+  /* padding: 0 100px; */
+}
+/* 헤더 로고 영역 */
+.header-content {
+  font-size: 20px;
+  font-weight: bold;
+}
+.header-content img {
+  width: 45px;
+  height: 45px;
 }
 
 /* 헤더 아래 컨테이너 */
+.wrapper {
+  height: 100vh;
+  overflow-y: scroll;
+}
 .container-fluid {
   max-width: 1280px; /* 페이지 최대 넓이 */
+  height: fit-content;
   position: relative;
-  padding: 0 80px;
-  /* margin-bottom: 200px; */
+  padding: 140px 80px 0 80px;
+  background-color: rgba(7, 14, 23, 0.8);
 }
 /* 숙소정보 영역 */
 .content {
   width: 100%;
-  /* border: 1px solid blue; */
+  color: white;
 }
 /* 숙소 타이틀 영역 */
 .gh-title {
   font-size: 26px;
 }
-
 /* 숙소 이미지 영역 */
 .img-container {
   display: flex;
@@ -124,7 +164,8 @@ body {
 .hr {
   width: 100%;
   margin: 20px 0; /* 기본 위아래 여백 */
-  border: 1px solid rgb(235 235 235); /* 추후에 적용예정 */
+  border: 0.5px solid rgb(235 235 235); /* 추후에 적용예정 */
+  opacity: 0.5;
 }
 
 /* 숙소 상세정보 영역 - 왼쪽 */
@@ -169,14 +210,46 @@ body {
 /* 숙소 상세정보 영역 - 오른쪽 */
 .gh-details-right {
   width: 40%;
+  height: fit-content;
   display: flex;
   justify-content: end;
 }
+/* 예약하기 영역 */
 .reserv-container {
   width: 100%;
-  border: 1px solid darkgray;
+  border: 1px solid rgb(235 235 235);
   border-radius: 20px;
   padding: 24px;
+}
+/* 매진된 경우 표시창 */
+.sold-out {
+  font-size: 24px;
+}
+.sold-out-title {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+/* 예약하기, 알림받기 버튼 */
+.reserv-button,
+.sold-out-button {
+  padding: 18px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  background-color: #fe4768;
+  /* background-color: #fd385c; */
+  border-radius: 15px;
+  cursor: pointer;
+}
+.reserv-button:hover,
+.sold-out-button:hover {
+  background-color: #fc3459;
+}
+/* 구매 가능한 경우 예약창 */
+.available {
+  display: none;
 }
 .price-title {
   font-size: 24px;
@@ -195,6 +268,8 @@ body {
   vertical-align: middle;
   height: 100%;
   margin-bottom: 20px;
+  color: black !important;
+  padding: 5px;
 }
 /* Date Range Picker 달력 넓이 조정 */
 .daterangepicker {
@@ -209,17 +284,7 @@ body {
 .daterangepicker th {
   padding: 10px; /* 셀 패딩 조정 */
 }
-/* 예약하기 버튼 */
-.reserv-button {
-  padding: 18px;
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  color: white;
-  background-color: #fd385c;
-  border-radius: 15px;
-  cursor: pointer;
-}
+
 /* 수수료 가격 안내 영역 */
 .fee-info {
   display: flex;
@@ -263,7 +328,7 @@ body {
 .review-section {
 }
 .review-ul {
-  margin-bottom: 80px;
+  /* margin-bottom: 80px; */
 }
 .review-li {
   margin-bottom: 10px;
@@ -277,6 +342,7 @@ body {
   height: 48px;
   border-radius: 50%;
   background-repeat: no-repeat;
+  border: 1px solid gray;
 }
 .reivewer-profile-info {
   display: flex;
@@ -288,10 +354,15 @@ body {
   width: 170px;
   padding: 10px 0;
   text-align: center;
-  margin-top: 40px;
+  margin-top: 30px;
+  margin-bottom: 80px;
   border: 1px solid darkgray;
   border-radius: 10px;
   cursor: pointer;
+}
+.more-button:hover {
+  background-color: rgb(235 235 235);
+  color: black;
 }
 
 /* 지도 영역 */
@@ -323,7 +394,9 @@ footer {
   left: 0;
   height: 500px;
   margin-top: 300px;
-  background-color: #f7f7f7;
+  /* background-color: #f7f7f7; */
+  background-color: rgba(7, 14, 23, 0.7);
+  border-top: 1px solid gray;
 }
 
 /* 모달 배경 */
@@ -332,16 +405,20 @@ footer {
   position: fixed;
   width: 100%;
   height: 100%;
+  color: black;
   background-color: rgba(0, 0, 0, 0.354);
-
-  display: none; /*  기본값 */
+  display: none; /* 기본 */
+}
+/* body에 추가 필요 */
+.no-scroll {
+  overflow: hidden;
 }
 /* 모달 컨테이너 */
 .modalContainer {
   position: fixed;
-  width: 700px;
-  height: 500px;
-  background-color: white;
+  width: 45%;
+  height: 80%;
+  background-color: #f7f7f7;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -351,6 +428,7 @@ footer {
   align-items: center;
   box-shadow: 8px 8px 20px #666666;
 }
+
 /* 모달 닫기 버튼 */
 .closeButton {
   position: absolute;
@@ -368,7 +446,14 @@ footer {
 }
 /* 모달에 들어갈 내용 컨테이너 */
 .modalContent {
-  width: 90%;
+  position: relative;
+  width: 92%;
   height: 90%;
-  border: 1px solid black;
+  /* overflow: scroll; */
+  /* border: 1px solid black; */
+}
+.all-review-ul {
+  height: 100%;
+  padding-right: 70px;
+  overflow: scroll;
 }
