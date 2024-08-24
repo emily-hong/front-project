@@ -360,15 +360,94 @@
 
       <!-- Footer -->
       <footer>
-        <h1>Footer</h1>
+        <div class="container">
+          <!-- 상단 섹션: 정보 및 링크 -->
+          <div class="row">
+            <!-- 회사 정보 -->
+            <div class="col-md-3">
+              <h5>About Us</h5>
+              <p>
+                We offer the best selection of guesthouses from around the
+                world, connecting travelers with unique and affordable
+                accommodation options.
+              </p>
+            </div>
+
+            <!-- 빠른 링크 -->
+            <div class="col-md-3">
+              <h5>Quick Links</h5>
+              <ul class="list-unstyled">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Destinations</a></li>
+                <li><a href="#">Guesthouses</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contact Us</a></li>
+              </ul>
+            </div>
+
+            <!-- 고객 지원 -->
+            <div class="col-md-3">
+              <h5>Customer Support</h5>
+              <ul class="list-unstyled">
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Cancellation Policy</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+              </ul>
+            </div>
+
+            <!-- 소셜 미디어 -->
+            <div class="col-md-3">
+              <h5>Follow Us</h5>
+              <ul class="list-unstyled d-flex">
+                <li>
+                  <a href="#" class="mr-2"
+                    ><img
+                      src="https://img.icons8.com/fluent/24/000000/facebook-new.png"
+                      alt="Facebook"
+                  /></a>
+                </li>
+                <li>
+                  <a href="#" class="mr-2"
+                    ><img
+                      src="https://img.icons8.com/fluent/24/000000/instagram-new.png"
+                      alt="Instagram"
+                  /></a>
+                </li>
+                <li>
+                  <a href="#" class="mr-2"
+                    ><img
+                      src="https://img.icons8.com/fluent/24/000000/twitter.png"
+                      alt="Twitter"
+                  /></a>
+                </li>
+                <li>
+                  <a href="#"
+                    ><img
+                      src="https://img.icons8.com/fluent/24/000000/youtube-play.png"
+                      alt="YouTube"
+                  /></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 하단 섹션: 저작권 및 기타 정보 -->
+          <div class="row mt-4">
+            <div class="col text-center">
+              <p>&copy; 2024 Guesthouse Explorer. All rights reserved.</p>
+              <p>
+                <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+              </p>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
 
-    <!-- 달력 Flatpickr JavaScript CDN -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
     <!-- Date Range Picker JavaScript CDN -->
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
     <script type="text/javascript">
       $(function () {
         $("#daterange").daterangepicker(
@@ -388,8 +467,6 @@
           }
         );
       });
-
-      // 달력
 
       // 1. 막대차트 : 숙소 재방문율
       const ctx = document.querySelector("#chart-bar-view");
