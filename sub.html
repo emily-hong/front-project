@@ -35,15 +35,49 @@
     ></script>
     <!-- Moment.js CDN - 달력 -->
     <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
     <!-- Date Range Picker CSS CDN - 달력-->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
     />
-    <title>저기어때</title>
+
+    <!-- sub.js -->
+    <script type="module" src="sub.js"></script>
+
+    <title>EchoTrip</title>
 
     <script>
       $(function () {
+        // 로컬스토리지 데이터
+        const jsonString = localStorage.getItem("house-info");
+        // JSON 파싱하여 객체 배열로 변환
+        const dataList = JSON.parse(jsonString);
+        // console.log(dataList);
+        let priceToNum = Number(dataList.price.replace(/,/g, ""));
+
+        // 상세페이지 정보
+        // 숙소 작은 이미지
+        $.each(dataList.imageSubUrl, (index, value) => {
+          $(`.sm-img-${index + 1}`).css("background-image", `url(${value})`);
+          $(`#modal-img-${index + 1}`).css("background-image", `url(${value})`);
+        });
+        $("#gh-title").html(dataList.name); // 숙소 타이틀
+        $("#gh-rating").html(dataList.rate); // 평점
+        $("#description").html(dataList.description); // 숙소 설명
+        $("#day-price").html(dataList.price); // 숙소 가격(1박)
+        $("#charge").html(
+          "₩ " + (priceToNum - priceToNum * 0.9).toLocaleString()
+        ); // 서비스 수수료
+        $("#total-price").html(
+          "₩" + (priceToNum + priceToNum * 0.1).toLocaleString()
+        ); // 총 합계 가격
+        // 지도 정보
+        let location =
+          dataList.location[0] + dataList.location[1] + dataList.location[2];
+        $(".location-name").html(location); // 주소명
+        $("#map-iframe").attr("src", dataList.location[3]); // 주소 url
+
         // 스크롤 감지
         // $(window).on("scroll", function () {
         //   if ($(window).scrollTop() === 0) {
@@ -55,11 +89,26 @@
         //   }
         // });
 
+        // 리뷰 모달창
+        $(".more-button").on("click", function () {
+          $(".modalBackground").css("display", "block");
+          $("body").addClass("no-scroll");
+        });
         // 모달창 닫기버튼
         $(".closeButton").on("click", function () {
           console.log("모달 닫기 클릭");
           $(".modalBackground").css("display", "none");
+          $("body").removeClass("no-scroll");
         });
+
+        // $("#content-img").slick({
+        //   row: 1,
+        //   slidesToShow: 1,
+        //   slidesToScroll: 1,
+        //   dots,
+        //   arrows,
+        //   centerMode,
+        // });
 
         // 차트
         // 1. 막대
@@ -73,9 +122,17 @@
   </head>
 
   <body>
+    <video autoplay muted loop>
+      <source src="./videos/background-video.mp4" />
+    </video>
+
     <!-- 헤더 -->
     <div class="header-section">
-      <div class="header-content">헤더임</div>
+      <div class="header-content">
+        <span>ECH</span
+        ><span><img src="./images/echotrip-logo.png" alt="logo" /></span
+        ><span>TRIP</span>
+      </div>
     </div>
 
     <!-- TODO 스크롤시 보임 유무 적용 -->
@@ -83,315 +140,229 @@
       <div class="reserv-header-content">예약하기 버튼</div>
     </div>
 
-    <!-- 페이지 내용 컨테이너 -->
-    <div class="container-fluid">
-      <!-- 숙소 정보 -->
-      <div class="content">
-        <!-- 숙소명-->
-        <div class="gh-title">
-          <p>인사이드 아웃 2 세계에서 핵심 기억 만들기</p>
-        </div>
-
-        <!-- 숙소 이미지 영역 -->
-        <div class="img-container">
-          <!-- 왼쪽 영역 (큰그림) -->
-          <div
-            class="img-el img-left-section"
-            style="
-              background-image: url('https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=2560&im_q=highq');
-            "
-          ></div>
-
-          <!-- 중간 영역 (작은 이미지 2개) -->
-          <div class="img-middle-section">
-            <div
-              class="img-el small-img"
-              style="
-                background-image: url('https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/f52a6a13-c8d1-4966-ad19-e614fd4bae3c.jpeg?im_w=1440&im_q=highq');
-              "
-            ></div>
-            <div
-              class="img-el small-img"
-              style="
-                background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/0caa1462-bd5f-4cfa-8f9d-7012f7eb7d02.jpeg?im_w=1440&im_q=highq);
-              "
-            ></div>
+    <div class="wrapper">
+      <!-- 페이지 내용 컨테이너 -->
+      <div class="container-fluid">
+        <!-- 숙소 정보 -->
+        <div class="content">
+          <!-- 숙소명-->
+          <div class="gh-title">
+            <p id="gh-title"></p>
           </div>
 
-          <!-- 오른쪽 영역 (작은 이미지 2개) -->
-          <div class="img img-right-section">
+          <!-- 숙소 이미지 영역 -->
+          <div class="img-container">
+            <!-- 왼쪽 영역 (큰그림) -->
             <div
-              class="img-el small-img"
+              class="img-el img-left-section"
               style="
-                background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/dcb25748-642f-4314-9815-acaba652ca1e.jpeg?im_w=1440&im_q=highq);
+                background-image: url('https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=2560&im_q=highq');
               "
             ></div>
-            <div
-              class="img-el small-img"
-              style="
-                background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/d25d568a-7cd3-460b-accc-94c6d71ccbde.jpeg?im_w=1440&im_q=highq);
-              "
-            ></div>
-          </div>
-        </div>
 
-        <!-- 숙소 상세정보 영역 -->
-        <div class="gh-details">
-          <!-- 왼쪽 영역 -->
-          <div class="gh-details-left">
-            <!-- 숙소 위치, 별점, 평가 문구 -->
-            <div class="overview">
-              <div class="overview-left">
-                <p class="gh-location">라스베이거스, 네바다, 미국</p>
-                <p class="gh-rating">★ 5.0</p>
-                <!-- 판매자 소개 -->
-                <div class="host-info">
-                  <div
-                    class="host-img"
-                    style="
-                      background-image: url('https://a0.muscache.com/im/pictures/user/User-571407812/original/d3298ae6-1ea8-494c-a001-d00e59ed0935.jpeg?im_w=240');
-                    "
-                  ></div>
-                  <div class="host-description">
-                    <div class="host-name">Doja Cat 님</div>
-                    <div class="host intro">
-                      안녕하세요, 저는 프랑스의 다학제 디자이너인 Mathieu
-                      Lehanneur입니다.
+            <!-- 중간 영역 (작은 이미지 2개) -->
+            <div class="img-middle-section">
+              <div class="img-el small-img sm-img-1"></div>
+              <div
+                class="img-el small-img sm-img-2"
+                style="
+                  background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/0caa1462-bd5f-4cfa-8f9d-7012f7eb7d02.jpeg?im_w=1440&im_q=highq);
+                "
+              ></div>
+            </div>
+
+            <!-- 오른쪽 영역 (작은 이미지 2개) -->
+            <div class="img img-right-section">
+              <div
+                class="img-el small-img sm-img-3"
+                style="
+                  background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/dcb25748-642f-4314-9815-acaba652ca1e.jpeg?im_w=1440&im_q=highq);
+                "
+              ></div>
+              <div
+                class="img-el small-img sm-img-4"
+                style="
+                  background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/d25d568a-7cd3-460b-accc-94c6d71ccbde.jpeg?im_w=1440&im_q=highq);
+                "
+              ></div>
+            </div>
+          </div>
+
+          <!-- 숙소 상세정보 영역 -->
+          <div class="gh-details">
+            <!-- 왼쪽 영역 -->
+            <div class="gh-details-left">
+              <!-- 숙소 위치, 별점, 평가 문구 -->
+              <div class="overview">
+                <div class="overview-left">
+                  <p class="gh-location">라스베이거스, 네바다, 미국</p>
+                  <p class="gh-rating">★ <span id="gh-rating"></span></p>
+                  <!-- 판매자 소개 -->
+                  <div class="host-info">
+                    <div
+                      class="host-img"
+                      style="
+                        background-image: url('https://a0.muscache.com/im/pictures/user/User-571407812/original/d3298ae6-1ea8-494c-a001-d00e59ed0935.jpeg?im_w=240');
+                      "
+                    ></div>
+                    <div class="host-description">
+                      <div class="host-name">Doja Cat 님</div>
+                      <div class="host intro">
+                        안녕하세요, 저는 프랑스의 다학제 디자이너인 Mathieu
+                        Lehanneur입니다.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hr"></div>
+
+                  <!-- 숙소 상세 설명  -->
+                  <div class="gh-description">
+                    <p id="description"></p>
+                    <!-- 편의시설 -->
+                    <p class="sub-title">[편의시설]</p>
+                    <div class="amenities">
+                      🍔 조식을 제공해요! &nbsp;&nbsp; 🐶 동물 친구 입장이
+                      가능해요! &nbsp;&nbsp; 🚗 주차가능
                     </div>
                   </div>
                 </div>
-                <div class="hr"></div>
+              </div>
+            </div>
 
-                <!-- 숙소 상세 설명  -->
-                <div class="gh-description">
-                  <p class="sub-title">[상세설명]</p>
-                  <p>
-                    누군가를 보며 '머릿속을 들여다보고 싶다'고 생각하신 적
-                    있나요? 이제 그 궁금증을 말끔히 해결해 보세요! 사상 최초로
-                    라일리의 감정 컨트롤 본부에서 하룻밤을 보낼 기회가 열립니다.
-                    정말 근사하죠?! 네, 그리고 예상하시는 것처럼 라일리의 감정을
-                    직접 조절하실 수 있습니다. 기쁨, 슬픔, 버럭 등 익숙한 감정은
-                    물론, 제가 미처 생각지도 못했던 새로운 감정들도요. 아무튼
-                    우리 라일리, 잘 부탁드려요. 제가 정말 사랑하거든요!
-                    <br />
-                    프로그램 제 눈에 안경일지 모르지만, 저희 본부는 최고로
-                    멋져요! 감정 제어판을 조작하지 않을 때 감정들이 어떻게
-                    생활하는지 가까이에서 지켜보세요. 이번에 새롭게 합류한 여러
-                    감정도 만나실 수 있어요. 새로운 감정들은 뭐랄까... 개성이
-                    참으로 뚜렷하다고 해두죠. 어쨌든, 하루 동안 여러분 머릿속
-                    감정들도 짜릿한 시간을 보낼 거예요. 놀라움 가득한 하루를
-                    기대해 주세요.
+            <!-- 오른쪽 영역 -->
+            <div class="gh-details-right">
+              <!-- 가격 정보 표시, 매진일 경우 매진으로 표시 -->
+              <div class="reserv-container">
+                <!-- 구매 가능한 경우 보임 -->
+                <div class="available">
+                  <div class="price-title">
+                    <span>₩ <span id="day-price"></span></span>
+                    <span style="font-size: 16px">&nbsp;/&nbsp;박</span>
+                  </div>
+                  <!-- TODO 날짜선택 , 인원수 선택 -->
+                  <div class="select-section">
+                    <p style="font-size: 18px">날짜 선택</p>
+                    <input
+                      type="text"
+                      name="daterange"
+                      id="daterange"
+                      placeholder="날짜를 선택하세요"
+                      style="border: 1px solid gray"
+                    />
+
+                    <p style="font-size: 18px">인원 선택</p>
+                  </div>
+                  <!-- 예약하기 버튼 -->
+                  <div class="reserv-button">예약하기</div>
+                  <p
+                    style="
+                      text-align: center;
+                      margin-top: 20px;
+                      font-size: 16px;
+                    "
+                  >
+                    예약 확정 전에는 요금이 청구되지 않습니다.
                   </p>
-                  <!-- 편의시설 -->
-                  <p class="sub-title">[편의시설]</p>
-                  <div class="amenities">
-                    🍔 조식을 제공해요! &nbsp;&nbsp; 🐶 동물 친구 입장이
-                    가능해요! &nbsp;&nbsp; 🚗 주차가능
+                  <!-- TODO -->
+                  <div class="fee-info">
+                    <p>에코트립 서비스 수수료</p>
+                    <p><span id="charge"></span></p>
+                  </div>
+
+                  <div class="hr"></div>
+                  <div
+                    class="total-price"
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 26px;
+                    "
+                  >
+                    <p>총 합계</p>
+                    <p id="total-price"></p>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 오른쪽 영역 -->
-          <div class="gh-details-right">
-            <!-- 가격 정보 표시, 매진일 경우 매진으로 표시 -->
-            <div class="reserv-container">
-              <div class="price-title">
-                <span>₩ 20,0000</span>
-                <span style="font-size: 16px">&nbsp;/&nbsp;박</span>
-              </div>
-              <!-- TODO 날짜선택 , 인원수 선택 -->
-              <div class="select-section">
-                <p style="font-size: 18px">날짜 선택</p>
-                <input
-                  type="text"
-                  name="daterange"
-                  id="daterange"
-                  placeholder="날짜를 선택하세요"
-                  style="border: 1px solid gray"
-                />
-
-                <p style="font-size: 18px">인원 선택</p>
-              </div>
-              <!-- 예약하기 버튼 -->
-              <div class="reserv-button">예약하기</div>
-              <p style="text-align: center; margin-top: 20px; font-size: 16px">
-                예약 확정 전에는 요금이 청구되지 않습니다.
-              </p>
-              <!-- TODO -->
-              <div class="fee-info">
-                <p>저기어때 서비스 수수료</p>
-                <p>₩ 481,414</p>
-              </div>
-
-              <div class="hr"></div>
-              <div
-                class="total-price"
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  font-size: 26px;
-                "
-              >
-                <p>총 합계</p>
-                <p>₩3,581,414</p>
-              </div>
-            </div>
-          </div>
-          <!-- 모달창 -->
-          <div class="modalBackground">
-            <div class="modalContainer">
-              <div class="closeButton" onclick="close()">X</div>
-              <div class="modalContent">모달에 들어갈 내용</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 차트 -->
-        <section class="chart-section">
-          <div class="chart-left">
-            <span>숙소 재방문율</span>
-            <div class="chart-bar">
-              <canvas id="chart-bar-view"></canvas>
-            </div>
-          </div>
-
-          <div class="chart-right">
-            <span>남녀 숙소 선호도</span>
-            <div class="chart-pie">
-              <canvas id="chart-pie-view"></canvas>
-            </div>
-          </div>
-        </section>
-
-        <!-- 리뷰 -->
-        <section class="review-section">
-          <h3>리뷰</h3>
-          <div class="hr"></div>
-          <ul class="review-ul">
-            <li class="review-li">
-              <!-- 리뷰작성자 프로필 사진, 이름, 별점 -->
-              <div class="reviewer-info">
-                <!-- 프로필 사진 -->
-                <div
-                  class="reviewer-profile-img"
-                  style="
-                    background-image: url('https://a0.muscache.com/im/pictures/user/a82292d8-8b30-4439-82a5-7068cff60365.jpg?im_w=240');
-                  "
-                ></div>
-
-                <!-- 작성자 이름, 별점 -->
-                <div class="reivewer-profile-info">
-                  <div class="reviewer-name">James</div>
-                  <div class="reviewer-rating">★★★★★</div>
+                <!-- 매진된 경우 표시 -->
+                <div class="sold-out">
+                  <div class="sold-out-title">
+                    해당 숙소는 예약 마감 되었습니다
+                  </div>
+                  <div class="sold-out-button">예약 가능 시 알림받기</div>
                 </div>
               </div>
-              <!-- 리뷰 내용 -->
-              <div class="reviewer-content">
-                정말 멋진 경험이었어요. 숙소는 엑스맨 쇼에 완벽하게 맞았고
-                배우들이 눈에 띄었습니다. 얼마나 저렴했는지 믿을 수 없을
-                정도입니다. 전반적으로 환상적인 직업입니다. I had a fantastic
-                time in the swamp! I couldn't have hoped for a better
-                experience, but we were very considerate and took good care of
-                how well it matched Shrek's swamp in the movie. Thank you!
+            </div>
+
+            <!-- 숙소 리뷰 모달창 -->
+            <div class="modalBackground">
+              <div class="modalContainer">
+                <div class="closeButton" onclick="close()">X</div>
+                <div class="modalContent">
+                  <ul class="all-review-ul">
+                    <!-- 리뷰 모달창 -->
+                  </ul>
+                </div>
               </div>
-            </li>
+            </div>
+          </div>
+
+          <!-- 차트 -->
+          <section class="chart-section">
+            <div class="chart-left">
+              <span>숙소 재방문율</span>
+              <div class="chart-bar">
+                <canvas id="chart-bar-view"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-right">
+              <span>남녀 숙소 선호도</span>
+              <div class="chart-pie">
+                <canvas id="chart-pie-view"></canvas>
+              </div>
+            </div>
+          </section>
+
+          <!-- 리뷰 -->
+          <section class="review-section">
+            <h3>리뷰</h3>
             <div class="hr"></div>
-
-            <!-- 리뷰2-->
-            <li class="review-li">
-              <!-- 리뷰작성자 프로필 사진, 이름, 별점 -->
-              <div class="reviewer-info">
-                <!-- 프로필 사진 -->
-                <div
-                  class="reviewer-profile-img"
-                  style="
-                    background-image: url('https://a0.muscache.com/im/pictures/user/a82292d8-8b30-4439-82a5-7068cff60365.jpg?im_w=240');
-                  "
-                ></div>
-
-                <!-- 작성자 이름, 별점 -->
-                <div class="reivewer-profile-info">
-                  <div class="reviewer-name">James</div>
-                  <div class="reviewer-rating">★★★★★</div>
-                </div>
-              </div>
-              <!-- 리뷰 내용 -->
-              <div class="reviewer-content">
-                정말 멋진 경험이었어요. 숙소는 엑스맨 쇼에 완벽하게 맞았고
-                배우들이 눈에 띄었습니다. 얼마나 저렴했는지 믿을 수 없을
-                정도입니다. 전반적으로 환상적인 직업입니다. I had a fantastic
-                time in the swamp! I couldn't have hoped for a better
-                experience, but we were very considerate and took good care of
-                how well it matched Shrek's swamp in the movie. Thank you!
-              </div>
-            </li>
-            <div class="hr"></div>
-            <!-- 리뷰3 -->
-            <li class="review-li">
-              <!-- 리뷰작성자 프로필 사진, 이름, 별점 -->
-              <div class="reviewer-info">
-                <!-- 프로필 사진 -->
-                <div
-                  class="reviewer-profile-img"
-                  style="
-                    background-image: url('https://a0.muscache.com/im/pictures/user/a82292d8-8b30-4439-82a5-7068cff60365.jpg?im_w=240');
-                  "
-                ></div>
-
-                <!-- 작성자 이름, 별점 -->
-                <div class="reivewer-profile-info">
-                  <div class="reviewer-name">James</div>
-                  <div class="reviewer-rating">★★★★★</div>
-                </div>
-              </div>
-              <!-- 리뷰 내용 -->
-              <div class="reviewer-content">
-                정말 멋진 경험이었어요. 숙소는 엑스맨 쇼에 완벽하게 맞았고
-                배우들이 눈에 띄었습니다. 얼마나 저렴했는지 믿을 수 없을
-                정도입니다. 전반적으로 환상적인 직업입니다. I had a fantastic
-                time in the swamp! I couldn't have hoped for a better
-                experience, but we were very considerate and took good care of
-                how well it matched Shrek's swamp in the movie. Thank you!
-              </div>
-            </li>
-
+            <ul class="review-ul">
+              <!-- 리뷰작성자 프로필 사진, 이름, 별점, 리뷰 내용 -->
+            </ul>
             <div class="more-button">후기 7개 모두 보기</div>
-          </ul>
-        </section>
+          </section>
 
-        <div class="hr"></div>
-        <!-- 지도 (iframe) -->
-        <section class="gh-map-section">
-          <h2>위치</h2>
-          <p class="location-name">라스베이거스, 네바다, 미국</p>
-          <div class="map">
-            <!-- https://ordinary-code.tistory.com/113?pidx=4 -->
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d412505.9198529579!2d-115.50395679329398!3d36.1251050251558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80beb782a4f57dd1%3A0x3accd5e6d5b379a3!2z66-46rWtIOuEpOuwlOuLpCDrnbzsiqTrsqDsnbTqsbDsiqQ!5e0!3m2!1sko!2skr!4v1724321746938!5m2!1sko!2skr"
-              width="100%"
-              height="100%"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-          <p class="location-info-title">지역정보</p>
-          <p class="location-info">
-            Vagia는 세리포스 항구에서 불과 8km 거리에 있습니다. 칸티나는 해변
-            바로 앞의 일몰까지 오전 10시부터 일몰까지 운영되며, 인근 호텔에는
-            고급 레스토랑이 있습니다.
-          </p>
-        </section>
+          <!-- 지도 (iframe) -->
+          <section class="gh-map-section">
+            <h2 class="gh-map-title">위치</h2>
+            <p class="location-name">라스베이거스, 네바다, 미국</p>
+            <div class="map">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d412505.9198529579!2d-115.50395679329398!3d36.1251050251558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80beb782a4f57dd1%3A0x3accd5e6d5b379a3!2z66-46rWtIOuEpOuwlOuLpCDrnbzsiqTrsqDsnbTqsbDsiqQ!5e0!3m2!1sko!2skr!4v1724321746938!5m2!1sko!2skr"
+                width="100%"
+                height="100%"
+                style="border: 0"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                id="map-iframe"
+              ></iframe>
+            </div>
+            <p class="location-info-title">지역정보</p>
+            <p class="location-info">
+              Vagia는 세리포스 항구에서 불과 8km 거리에 있습니다. 칸티나는 해변
+              바로 앞의 일몰까지 오전 10시부터 일몰까지 운영되며, 인근 호텔에는
+              고급 레스토랑이 있습니다.
+            </p>
+          </section>
+        </div>
       </div>
-    </div>
 
-    <!-- Footer -->
-    <footer>
-      <h1>Footer</h1>
-    </footer>
+      <!-- Footer -->
+      <footer>
+        <h1>Footer</h1>
+      </footer>
+    </div>
 
     <!-- 달력 Flatpickr JavaScript CDN -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
@@ -399,11 +370,6 @@
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     <script type="text/javascript">
-      // 달력 Flatpickr Initialization
-      // flatpickr("#dateRangePicker", {
-      //   mode: "range",
-      //   dateFormat: "Y-m-d",
-      // });
       $(function () {
         $("#daterange").daterangepicker(
           {
@@ -437,8 +403,8 @@
               data: [50, 300, 570, 320, 170, 50],
 
               // 그래프의 배경색과 선색을 지정
-              backgroundColor: "rgba(255, 0, 0, 0.4)",
-              borderColor: "rgb(200, 0, 0)",
+              backgroundColor: "#eb989d",
+              borderColor: "#eb989d",
             },
             // 하나의 데이터 묶음을 더 추가
             {
@@ -446,8 +412,8 @@
               data: [100, 400, 630, 500, 260, 100],
 
               // 그래프의 배경색과 선색을 지정
-              backgroundColor: "rgba(0, 0, 255, 0.5)",
-              borderColor: "rgb(0, 0, 200)",
+              backgroundColor: "#8E8CFF",
+              borderColor: "#8E8CFF",
             },
           ],
         },
