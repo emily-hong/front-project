@@ -134,6 +134,7 @@ video {
 .container-fluid {
   /* max-width: 1760px; 사이트 최대 넓이 */
   max-width: 1260px;
+  min-height: 100vh;
   position: relative;
   padding: 0 50px;
 }
