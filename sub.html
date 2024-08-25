@@ -50,34 +50,47 @@
     <script>
       $(function () {
         // 로컬스토리지 데이터
-        const jsonString = localStorage.getItem("house-info");
+        const jsonString = localStorage.getItem("houseInfo");
         // JSON 파싱하여 객체 배열로 변환
         const dataList = JSON.parse(jsonString);
         // console.log(dataList);
         let priceToNum = Number(dataList.price.replace(/,/g, ""));
 
-        // 상세페이지 정보
-        // TODO
-        // 숙소 작은 이미지
-        $.each(dataList.imageSubUrl, (index, value) => {
+        ////// 상세페이지 정보 //////
+        // 숙소 이미지
+        $.each(dataList.imageUrl, (index, value) => {
+          // 큰 그림
+          $(`.img-left-section`).css("background-image", `url(${value})`);
+          // 작은 그림
           $(`.sm-img-${index + 1}`).css("background-image", `url(${value})`);
           $(`#modal-img-${index + 1}`).css("background-image", `url(${value})`);
         });
-        $("#gh-title").html(dataList.name); // 숙소 타이틀
-        $("#gh-rating").html(dataList.rate); // 평점
-        $("#description").html(dataList.description); // 숙소 설명
-        $("#day-price").html(dataList.price); // 숙소 가격(1박)
+
+        // 숙소 타이틀
+        $("#gh-title").html(dataList.name);
+        // 평점
+        $("#gh-rating").html(dataList.rate);
+
+        // 판매자 이름
+        $(".host-name").html(dataList.sellerName);
+        // 판매자 설명
+        $(".host-intro").html(dataList.sellerDescription);
+        // 숙소 설명
+        $("#description").html(dataList.description);
+        // 숙소 가격(1박)
+        $("#day-price").html(dataList.price);
         $("#charge").html(
           "₩ " + (priceToNum - priceToNum * 0.9).toLocaleString()
         ); // 서비스 수수료
         $("#total-price").html(
           "₩" + (priceToNum + priceToNum * 0.1).toLocaleString()
         ); // 총 합계 가격
+
         // 지도 정보
-        let location =
-          dataList.location[0] + dataList.location[1] + dataList.location[2];
+        let location = dataList.location[0];
         $(".location-name").html(location); // 주소명
-        $("#map-iframe").attr("src", dataList.location[3]); // 주소 url
+        $("#map-iframe").attr("src", dataList.location[1]); // 주소 url
+        $(".location-info").html(dataList.location[2]); // 지역정보
 
         // 리뷰 모달창
         $(".more-button").on("click", function () {
@@ -126,38 +139,18 @@
           <!-- 숙소 이미지 영역 -->
           <div class="img-container">
             <!-- 왼쪽 영역 (큰그림) -->
-            <div
-              class="img-el img-left-section"
-              style="
-                background-image: url('https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/ced15ffe-0ab5-48cf-a189-dbdeaaf04387.jpeg?im_w=2560&im_q=highq');
-              "
-            ></div>
+            <div class="img-el img-left-section"></div>
 
             <!-- 중간 영역 (작은 이미지 2개) -->
             <div class="img-middle-section">
               <div class="img-el small-img sm-img-1"></div>
-              <div
-                class="img-el small-img sm-img-2"
-                style="
-                  background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/0caa1462-bd5f-4cfa-8f9d-7012f7eb7d02.jpeg?im_w=1440&im_q=highq);
-                "
-              ></div>
+              <div class="img-el small-img sm-img-2"></div>
             </div>
 
             <!-- 오른쪽 영역 (작은 이미지 2개) -->
             <div class="img img-right-section">
-              <div
-                class="img-el small-img sm-img-3"
-                style="
-                  background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/dcb25748-642f-4314-9815-acaba652ca1e.jpeg?im_w=1440&im_q=highq);
-                "
-              ></div>
-              <div
-                class="img-el small-img sm-img-4"
-                style="
-                  background-image: url(https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEzMTA4MzUyMzk5Mjc3MDU5Nw%3D%3D/original/d25d568a-7cd3-460b-accc-94c6d71ccbde.jpeg?im_w=1440&im_q=highq);
-                "
-              ></div>
+              <div class="img-el small-img sm-img-3"></div>
+              <div class="img-el small-img sm-img-4"></div>
             </div>
           </div>
 
@@ -179,11 +172,8 @@
                       "
                     ></div>
                     <div class="host-description">
-                      <div class="host-name">Doja Cat 님</div>
-                      <div class="host intro">
-                        안녕하세요, 저는 프랑스의 다학제 디자이너인 Mathieu
-                        Lehanneur입니다.
-                      </div>
+                      <div class="host-name"></div>
+                      <div class="host-intro"></div>
                     </div>
                   </div>
                   <div class="hr"></div>
@@ -310,7 +300,7 @@
           <!-- 지도 (iframe) -->
           <section class="gh-map-section">
             <h2 class="gh-map-title">위치</h2>
-            <p class="location-name">라스베이거스, 네바다, 미국</p>
+            <p class="location-name"></p>
             <div class="map">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d412505.9198529579!2d-115.50395679329398!3d36.1251050251558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80beb782a4f57dd1%3A0x3accd5e6d5b379a3!2z66-46rWtIOuEpOuwlOuLpCDrnbzsiqTrsqDsnbTqsbDsiqQ!5e0!3m2!1sko!2skr!4v1724321746938!5m2!1sko!2skr"
@@ -325,11 +315,7 @@
             </div>
             <!-- TODO -->
             <p class="location-info-title">지역정보</p>
-            <p class="location-info">
-              Vagia는 세리포스 항구에서 불과 8km 거리에 있습니다. 칸티나는 해변
-              바로 앞의 일몰까지 오전 10시부터 일몰까지 운영되며, 인근 호텔에는
-              고급 레스토랑이 있습니다.
-            </p>
+            <p class="location-info"></p>
           </section>
         </div>
       </div>
@@ -424,6 +410,8 @@
 
     <!-- Date Range Picker JavaScript CDN -->
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <!-- 플러그인 추가 (이전에 script 태그로 chartjs-plugin-datalabels를 포함해야 함) -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script type="text/javascript">
       $(function () {
         $("#daterange").daterangepicker(
@@ -471,7 +459,6 @@
               ],
               // 막대의 굵기 조정
               barThickness: 60, // 막대 굵기 직접 지정
-              // maxBarThickness: 20, // 막대의 최대 굵기 제한 (선택사항)
             },
           ],
         },
@@ -482,6 +469,24 @@
               display: false, // 라벨 숨기기
             },
           },
+          scales: {
+            x: {
+              ticks: {
+                color: "#ffffff",
+                font: {
+                  size: 16,
+                },
+              },
+            },
+            y: {
+              ticks: {
+                color: "#ffffff",
+                font: {
+                  size: 16,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -490,13 +495,14 @@
       const hoverPieChartCtx = document
         .querySelector("#chart-pie-view")
         .getContext("2d");
+
       const hoverPieChart = new Chart(hoverPieChartCtx, {
         type: "pie",
         data: {
           labels: ["남성", "여성"],
           datasets: [
             {
-              data: [30, 20],
+              data: [800, 1200],
               backgroundColor: ["#9392e8", "#eb989d"],
               borderColor: ["rgba(0, 0, 255, 0.3)", "rgba(255, 0, 0, 0.3)"],
               borderWidth: 1,
@@ -506,15 +512,31 @@
         },
         options: {
           plugins: {
-            // legend: {
-            //   position: "top",
-            // },
-            // title: {
-            //   display: true,
-            //   text: "Pie Chart 임",
-            // },
+            legend: {
+              labels: {
+                font: {
+                  size: 14, // 라벨 글씨 크기
+                },
+                color: "#fff", // 라벨 글씨 색상
+              },
+            },
+            datalabels: {
+              color: "#fff", // 파이 차트 안의 숫자 색상
+              font: {
+                size: 20, // 파이 차트 안의 숫자 크기
+              },
+              formatter: (value, context) => {
+                const total = context.dataset.data.reduce(
+                  (acc, val) => acc + val,
+                  0
+                );
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${percentage}%`; // 백분율로 표시
+              },
+            },
           },
         },
+        plugins: [ChartDataLabels], // 플러그인 등록
       });
     </script>
   </body>

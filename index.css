@@ -91,12 +91,11 @@ video {
   top: 50%; /* input의 수직 중앙에 맞추기 위해 설정 */
   transform: translateY(-50%); /* 수직 중앙 정렬을 위한 변환 */
   /*background-color: transparent; 버튼의 배경 투명하게 */
-  background-color: #ff4653;
+  background-color: #082d5c;
   background-image: url("./images/search.png");
   background-size: 60%;
   background-position: center;
   background-repeat: no-repeat;
-  border: #ff4653;
   border-radius: 100px;
   cursor: pointer; /* 마우스 포인터 변경 */
   font-size: 18px; /* 버튼의 글꼴 크기 */
@@ -111,28 +110,30 @@ video {
   margin: auto 0;
   margin-right: 20px;
   padding: 5px;
-
   display: flex;
   justify-content: space-evenly;
+  /* background-color: #007bff; */
+  background-color: white;
 }
 
 .set1 {
   width: 30%;
   height: 90%;
-  background-image: url("./images/menu2.png");
+  background-image: url("./images/menu.png");
   background-size: cover;
 }
 
 .set2 {
   width: 40%;
   height: 90%;
-  background-image: url("./images/user2.png");
+  background-image: url("./images/user.png");
   background-size: cover;
 }
 
 /* 헤더 아래 컨테이너 */
 .container-fluid {
-  max-width: 1760px; /*사이트 최대 넓이*/
+  /* max-width: 1760px; 사이트 최대 넓이 */
+  max-width: 1260px;
   position: relative;
   padding: 0 50px;
 }
