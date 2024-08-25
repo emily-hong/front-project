@@ -57,6 +57,7 @@
         let priceToNum = Number(dataList.price.replace(/,/g, ""));
 
         // 상세페이지 정보
+        // TODO
         // 숙소 작은 이미지
         $.each(dataList.imageSubUrl, (index, value) => {
           $(`.sm-img-${index + 1}`).css("background-image", `url(${value})`);
@@ -78,17 +79,6 @@
         $(".location-name").html(location); // 주소명
         $("#map-iframe").attr("src", dataList.location[3]); // 주소 url
 
-        // 스크롤 감지
-        // $(window).on("scroll", function () {
-        //   if ($(window).scrollTop() === 0) {
-        //     // 화면 맨 위로 스크롤되었을때
-        //     $(".header-container").removeClass("header-small");
-        //   } else {
-        //     // 화면이 맨 위로 스크롤 되었을 때
-        //     $(".header-container").addClass("header-small");
-        //   }
-        // });
-
         // 리뷰 모달창
         $(".more-button").on("click", function () {
           $(".modalBackground").css("display", "block");
@@ -100,23 +90,6 @@
           $(".modalBackground").css("display", "none");
           $("body").removeClass("no-scroll");
         });
-
-        // $("#content-img").slick({
-        //   row: 1,
-        //   slidesToShow: 1,
-        //   slidesToScroll: 1,
-        //   dots,
-        //   arrows,
-        //   centerMode,
-        // });
-
-        // 차트
-        // 1. 막대
-        // 연령별 (20대 이하, 20대, 30대, 40대, 50대, 60대 이상), 성별(남,여)
-
-        // 2.
-        // 파이차트
-        //
       });
     </script>
   </head>
@@ -218,6 +191,7 @@
                   <!-- 숙소 상세 설명  -->
                   <div class="gh-description">
                     <p id="description"></p>
+                    <!-- TODO -->
                     <!-- 편의시설 -->
                     <p class="sub-title">[편의시설]</p>
                     <div class="amenities">
@@ -306,9 +280,10 @@
           </div>
 
           <!-- 차트 -->
+          <!-- TODO -->
           <section class="chart-section">
             <div class="chart-left">
-              <span>숙소 재방문율</span>
+              <span>나라별 예약율</span>
               <div class="chart-bar">
                 <canvas id="chart-bar-view"></canvas>
               </div>
@@ -329,7 +304,7 @@
             <ul class="review-ul">
               <!-- 리뷰작성자 프로필 사진, 이름, 별점, 리뷰 내용 -->
             </ul>
-            <div class="more-button">후기 7개 모두 보기</div>
+            <div class="more-button">후기 14개 모두 보기</div>
           </section>
 
           <!-- 지도 (iframe) -->
@@ -348,6 +323,7 @@
                 id="map-iframe"
               ></iframe>
             </div>
+            <!-- TODO -->
             <p class="location-info-title">지역정보</p>
             <p class="location-info">
               Vagia는 세리포스 항구에서 불과 8km 거리에 있습니다. 칸티나는 해변
@@ -473,29 +449,39 @@
       new Chart(ctx, {
         type: "bar",
         data: {
-          labels: ["20대 이하", "20대", "30대", "40대", "50대", "60대"],
+          labels: ["대한민국", "미국", "중국", "프랑스", "영국"],
           datasets: [
             {
-              label: "여성",
-              data: [50, 300, 570, 320, 170, 50],
-
-              // 그래프의 배경색과 선색을 지정
-              backgroundColor: "#eb989d",
-              borderColor: "#eb989d",
-            },
-            // 하나의 데이터 묶음을 더 추가
-            {
-              label: "남성",
-              data: [100, 400, 630, 500, 260, 100],
-
-              // 그래프의 배경색과 선색을 지정
-              backgroundColor: "#8E8CFF",
-              borderColor: "#8E8CFF",
+              // label: "",
+              data: [120, 300, 270, 80, 170],
+              // 각 나라별 막대의 색상 지정
+              backgroundColor: [
+                "#ff6384", // 대한민국
+                "#36a2eb", // 미국
+                "#ffcd56", // 중국
+                "#4bc0c0", // 프랑스
+                "#9966ff", // 영국
+              ],
+              borderColor: [
+                "#ff6384",
+                "#36a2eb",
+                "#ffcd56",
+                "#4bc0c0",
+                "#9966ff",
+              ],
+              // 막대의 굵기 조정
+              barThickness: 60, // 막대 굵기 직접 지정
+              // maxBarThickness: 20, // 막대의 최대 굵기 제한 (선택사항)
             },
           ],
         },
         options: {
           maintainAspectRatio: false, // 비율이 아닌 부모의 크기에 맞춰 크기 조정
+          plugins: {
+            legend: {
+              display: false, // 라벨 숨기기
+            },
+          },
         },
       });
 
@@ -511,7 +497,7 @@
           datasets: [
             {
               data: [30, 20],
-              backgroundColor: ["#8E8CFF", "#FCA5AA"],
+              backgroundColor: ["#9392e8", "#eb989d"],
               borderColor: ["rgba(0, 0, 255, 0.3)", "rgba(255, 0, 0, 0.3)"],
               borderWidth: 1,
               hoverBackgroundColor: ["#9392e8", "#eb989d"],

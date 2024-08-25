@@ -67,10 +67,10 @@ video {
 .header-content,
 .reserv-header-content {
   width: 100%;
-  max-width: 1140px;
-  /* max-width: 1400px; */
-  /* padding: 0 80px; */
-  /* padding: 0 100px; */
+  /* max-width: 1140px; */
+  color: #082d5c;
+  -webkit-text-stroke: 0.5px white; /* 2px 두께의 검정색 테두리 */
+  padding-left: 80px;
 }
 /* 헤더 로고 영역 */
 .header-content {
@@ -243,14 +243,13 @@ video {
   font-size: 20px;
   font-weight: bold;
   color: white;
-  background-color: #fe4768;
-  /* background-color: #fd385c; */
+  background-color: #2b8ffb;
   border-radius: 15px;
   cursor: pointer;
 }
 .reserv-button:hover,
 .sold-out-button:hover {
-  background-color: #fc3459;
+  background-color: #007bff;
 }
 
 /* 구매가능 타이틀 */
