@@ -405,8 +405,6 @@
 
         // 숙소 편의시설
         $.each(dataList.amenities, (index, item) => {
-          console.log("index : ", index);
-          console.log("item : ", item);
           // if (item == "상위 10% 숙소")
           let logoSrc;
           if (item == "상위 10% 숙소") logoSrc = "trophy";
@@ -498,6 +496,14 @@
           alert(
             `숙박기간 : ${startDate} ~ ${endDate}\n인원수 : ${guestNum}\n예약이 완료되었습니다.`
           );
+
+          // input 초기화
+          $("#daterange").val("");
+          // Date Range Picker 초기화
+          $("#daterange").data("daterangepicker").setStartDate(moment());
+          $("#daterange").data("daterangepicker").setEndDate(moment());
+          // 인원수 초기화
+          $("#guestNum").val("");
         });
       });
 
