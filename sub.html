@@ -48,62 +48,7 @@
     <title>EchoTrip</title>
 
     <script>
-      $(function () {
-        // 로컬스토리지 데이터
-        const jsonString = localStorage.getItem("houseInfo");
-        // JSON 파싱하여 객체 배열로 변환
-        const dataList = JSON.parse(jsonString);
-        // console.log(dataList);
-        let priceToNum = Number(dataList.price.replace(/,/g, ""));
-
-        ////// 상세페이지 정보 //////
-        // 숙소 이미지
-        $.each(dataList.imageUrl, (index, value) => {
-          // 큰 그림
-          $(`.img-left-section`).css("background-image", `url(${value})`);
-          // 작은 그림
-          $(`.sm-img-${index + 1}`).css("background-image", `url(${value})`);
-          $(`#modal-img-${index + 1}`).css("background-image", `url(${value})`);
-        });
-
-        // 숙소 타이틀
-        $("#gh-title").html(dataList.name);
-        // 평점
-        $("#gh-rating").html(dataList.rate);
-
-        // 판매자 이름
-        $(".host-name").html(dataList.sellerName);
-        // 판매자 설명
-        $(".host-intro").html(dataList.sellerDescription);
-        // 숙소 설명
-        $("#description").html(dataList.description);
-        // 숙소 가격(1박)
-        $("#day-price").html(dataList.price);
-        $("#charge").html(
-          "₩ " + (priceToNum - priceToNum * 0.9).toLocaleString()
-        ); // 서비스 수수료
-        $("#total-price").html(
-          "₩" + (priceToNum + priceToNum * 0.1).toLocaleString()
-        ); // 총 합계 가격
-
-        // 지도 정보
-        let location = dataList.location[0];
-        $(".location-name").html(location); // 주소명
-        $("#map-iframe").attr("src", dataList.location[1]); // 주소 url
-        $(".location-info").html(dataList.location[2]); // 지역정보
-
-        // 리뷰 모달창
-        $(".more-button").on("click", function () {
-          $(".modalBackground").css("display", "block");
-          $("body").addClass("no-scroll");
-        });
-        // 모달창 닫기버튼
-        $(".closeButton").on("click", function () {
-          console.log("모달 닫기 클릭");
-          $(".modalBackground").css("display", "none");
-          $("body").removeClass("no-scroll");
-        });
-      });
+      $(function () {});
     </script>
   </head>
 
@@ -119,11 +64,6 @@
         ><span><img src="./images/echotrip-logo.png" alt="logo" /></span
         ><span>TRIP</span>
       </div>
-    </div>
-
-    <!-- TODO 스크롤시 보임 유무 적용 -->
-    <div class="reserv-header-container">
-      <div class="reserv-header-content">예약하기 버튼</div>
     </div>
 
     <div class="wrapper">
@@ -178,16 +118,18 @@
                   </div>
                   <div class="hr"></div>
 
+                  <!-- TODO -->
+                  <!-- 편의시설 -->
+                  <p class="sub-title">[편의시설]</p>
+                  <div class="amenities">
+                    <!-- 🍔 조식을 제공해요! &nbsp;&nbsp; 🐶 동물 친구 입장이
+                    가능해요! &nbsp;&nbsp; 🚗 주차가능 -->
+                  </div>
+                  <div class="hr"></div>
+
                   <!-- 숙소 상세 설명  -->
                   <div class="gh-description">
                     <p id="description"></p>
-                    <!-- TODO -->
-                    <!-- 편의시설 -->
-                    <p class="sub-title">[편의시설]</p>
-                    <div class="amenities">
-                      🍔 조식을 제공해요! &nbsp;&nbsp; 🐶 동물 친구 입장이
-                      가능해요! &nbsp;&nbsp; 🚗 주차가능
-                    </div>
                   </div>
                 </div>
               </div>
@@ -203,7 +145,7 @@
                     <span>₩ <span id="day-price"></span></span>
                     <span style="font-size: 16px">&nbsp;/&nbsp;박</span>
                   </div>
-                  <!-- TODO 날짜선택 , 인원수 선택 -->
+                  <!-- 날짜선택 , 인원수 선택 -->
                   <div class="select-section">
                     <p style="font-size: 18px">날짜 선택</p>
                     <input
@@ -214,7 +156,13 @@
                       style="border: 1px solid gray"
                     />
 
-                    <p style="font-size: 18px">인원 선택</p>
+                    <p style="font-size: 18px">인원 수 입력</p>
+                    <input
+                      type="number"
+                      id="guestNum"
+                      name="guestNum"
+                      placeholder="0"
+                    />
                   </div>
                   <!-- 예약하기 버튼 -->
                   <div class="reserv-button">예약하기</div>
@@ -227,7 +175,6 @@
                   >
                     예약 확정 전에는 요금이 청구되지 않습니다.
                   </p>
-                  <!-- TODO -->
                   <div class="fee-info">
                     <p>에코트립 서비스 수수료</p>
                     <p><span id="charge"></span></p>
@@ -246,6 +193,7 @@
                     <p id="total-price"></p>
                   </div>
                 </div>
+
                 <!-- 매진된 경우 표시 -->
                 <div class="sold-out">
                   <div class="sold-out-title">
@@ -270,7 +218,6 @@
           </div>
 
           <!-- 차트 -->
-          <!-- TODO -->
           <section class="chart-section">
             <div class="chart-left">
               <span>나라별 예약율</span>
@@ -318,6 +265,10 @@
             <p class="location-info"></p>
           </section>
         </div>
+
+        <a href="#" class="btn_gotop">
+          <span class="glyphicon glyphicon-chevron-up">TOP</span>
+        </a>
       </div>
 
       <!-- Footer -->
@@ -413,7 +364,109 @@
     <!-- 플러그인 추가 (이전에 script 태그로 chartjs-plugin-datalabels를 포함해야 함) -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script type="text/javascript">
+      // 로컬스토리지 데이터
+      const jsonString = localStorage.getItem("houseInfo");
+      // JSON 파싱하여 객체 배열로 변환
+      const dataList = JSON.parse(jsonString);
       $(function () {
+        /* TOP 버튼 이벤트 처리 */
+        $(window).scroll(function () {
+          if ($(this).scrollTop() > 300) {
+            $(".btn_gotop").show();
+          } else {
+            $(".btn_gotop").hide();
+          }
+        });
+        $(".btn_gotop").click(function () {
+          $("html, body").animate({ scrollTop: 0 }, 400);
+          return false;
+        });
+
+        let priceToNum = Number(dataList.price.replace(/,/g, ""));
+        ////// 상세페이지 정보 //////
+        // 숙소 이미지
+        $.each(dataList.imageUrl, (index, value) => {
+          // 큰 그림
+          $(`.img-left-section`).css("background-image", `url(${value})`);
+          // 작은 그림
+          $(`.sm-img-${index + 1}`).css("background-image", `url(${value})`);
+          $(`#modal-img-${index + 1}`).css("background-image", `url(${value})`);
+        });
+
+        // 숙소 타이틀
+        $("#gh-title").html(dataList.name);
+        // 평점
+        $("#gh-rating").html(dataList.rate);
+
+        // 판매자 이름
+        $(".host-name").html(dataList.sellerName + " 님");
+        // 판매자 설명
+        $(".host-intro").html(dataList.sellerDescription);
+
+        // 숙소 편의시설
+        $.each(dataList.amenities, (index, item) => {
+          console.log("index : ", index);
+          console.log("item : ", item);
+          // if (item == "상위 10% 숙소")
+          let logoSrc;
+          if (item == "상위 10% 숙소") logoSrc = "trophy";
+          if (item == "슈퍼호스트") logoSrc = "medal";
+          if (item == "훌륭한 숙소 위치") logoSrc = "location";
+          if (item == "공동 주택의 방") logoSrc = "house";
+          if (item == "여행 가방 보관 가능") logoSrc = "bag";
+          if (item == "와이파이") logoSrc = "wifi";
+
+          $(".amenities").append(
+            `<p class="amenities-el">
+                <img
+                  width="20"
+                  height="20"
+                  src="/images/${logoSrc}.png"
+                  alt="medal"
+                />${item}</p>`
+          );
+        });
+
+        // 숙소 설명
+        $("#description").html(dataList.description);
+
+        // 예약, 매진 유무 표시
+        if (dataList.price == "0") {
+          $(".available").css("display", "none");
+          $(".sold-out").css("display", "block");
+        } else {
+          $(".available").css("display", "black");
+          $(".sold-out").css("display", "none");
+        }
+
+        // 숙소 가격(1박)
+        $("#day-price").html(dataList.price);
+        $("#charge").html(
+          "₩ " + (priceToNum - priceToNum * 0.9).toLocaleString()
+        ); // 서비스 수수료
+        $("#total-price").html(
+          "₩" + (priceToNum + priceToNum * 0.1).toLocaleString()
+        ); // 총 합계 가격
+
+        // 지도 정보
+        let location = dataList.location[0];
+        $(".location-name").html(location); // 주소명
+        $("#map-iframe").attr("src", dataList.location[1]); // 주소 url
+        $(".location-info").html(dataList.location[2]); // 지역정보
+
+        // 리뷰 모달창
+        $(".more-button").on("click", function () {
+          $(".modalBackground").css("display", "block");
+          $("body").addClass("no-scroll");
+        });
+        // 모달창 닫기버튼
+        $(".closeButton").on("click", function () {
+          console.log("모달 닫기 클릭");
+          $(".modalBackground").css("display", "none");
+          $("body").removeClass("no-scroll");
+        });
+
+        let startDate, endDate;
         $("#daterange").daterangepicker(
           {
             opens: "left",
@@ -428,8 +481,24 @@
                 " to " +
                 end.format("YYYY-MM-DD")
             );
+            startDate = start.format("YYYY-MM-DD");
+            endDate = end.format("YYYY-MM-DD");
           }
         );
+        // 예약하기 완료 알림창
+        $(".reserv-button").on("click", () => {
+          let guestNum = $(`#guestNum`).val();
+          if (startDate == undefined) {
+            return alert("날짜를 선택해주세요.");
+          }
+          if (guestNum == 0 || guestNum == "") {
+            return alert("인원수를 입력해주세요.");
+          }
+          console.log(`${startDate} ~ ${endDate}`);
+          alert(
+            `숙박기간 : ${startDate} ~ ${endDate}\n인원수 : ${guestNum}\n예약이 완료되었습니다.`
+          );
+        });
       });
 
       // 1. 막대차트 : 숙소 재방문율
@@ -443,22 +512,10 @@
               // label: "",
               data: [120, 300, 270, 80, 170],
               // 각 나라별 막대의 색상 지정
-              backgroundColor: [
-                "#ff6384", // 대한민국
-                "#36a2eb", // 미국
-                "#ffcd56", // 중국
-                "#4bc0c0", // 프랑스
-                "#9966ff", // 영국
-              ],
-              borderColor: [
-                "#ff6384",
-                "#36a2eb",
-                "#ffcd56",
-                "#4bc0c0",
-                "#9966ff",
-              ],
+              backgroundColor: "#4a90e2", // 동일한 색상으로 설정
+              borderColor: "#4a90e2", // 동일한 색상
               // 막대의 굵기 조정
-              barThickness: 60, // 막대 굵기 직접 지정
+              barThickness: 50, // 막대 굵기 직접 지정
             },
           ],
         },
@@ -492,21 +549,24 @@
 
       // 2. 파이차트 : 남녀 선호도
       // https://waymond.tistory.com/56
+      // 남, 여 선호도 데이터
+      const reserveMale = Number(dataList.reserveM);
+      const reserveFemale = Number(dataList.reserveW);
+
       const hoverPieChartCtx = document
         .querySelector("#chart-pie-view")
         .getContext("2d");
-
       const hoverPieChart = new Chart(hoverPieChartCtx, {
         type: "pie",
         data: {
           labels: ["남성", "여성"],
           datasets: [
             {
-              data: [800, 1200],
-              backgroundColor: ["#9392e8", "#eb989d"],
+              data: [reserveMale, reserveFemale],
+              backgroundColor: ["#4a90e2", "#ff6b6b"], // 남성, 여성
               borderColor: ["rgba(0, 0, 255, 0.3)", "rgba(255, 0, 0, 0.3)"],
               borderWidth: 1,
-              hoverBackgroundColor: ["#9392e8", "#eb989d"],
+              hoverBackgroundColor: ["#357ABD", "#e35d5d"], // Hover 색상
             },
           ],
         },

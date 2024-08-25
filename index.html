@@ -46,12 +46,14 @@
       /* 테마 정보*/
       .themes-container {
         /* position: sticky; */
-        top: 90px; /* header-container 바로 아래에 위치하도록 top 값 설정 */
-        z-index: 1; /* header-container 보다 낮은 z-index 설정 */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
-        background-size: 10%;
-        border-radius: 50px;
-        margin: auto;
+        /* header-container 바로 아래에 위치하도록 top 값 설정 */
+        /* top: 90px; */
+        /* header-container 보다 낮은 z-index 설정 */
+        /* z-index: 1; */
+        /* 약간의 그림자 추가 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        /* background-size: 10%; */
+        /* margin: auto; */
       }
 
       .themes {
@@ -72,7 +74,6 @@
         align-items: center;
         overflow: hidden;
         background-color: lightgray;
-        /* border: 1px dotted #ff4653; */
         border-radius: 10px;
       }
 
@@ -110,6 +111,7 @@
         margin: 60px 13px 20px 13px;
         overflow: hidden;
         border: 1px dotted white;
+        background-color: rgba(7, 14, 23, 0.8);
       }
 
       .houseContainer * {
@@ -231,11 +233,13 @@
           if ($(window).scrollTop() === 0) {
             // 화면 맨 위로 스크롤되었을때
             $(".header-container").removeClass("header-small");
-            $(".themes-container").removeClass("themes-container-black");
+            $(".search-container").removeClass("search-container-small");
+            // $(".themes-container").removeClass("themes-container-black");
           } else {
             // 화면이 맨 위로 스크롤 되었을 때
             $(".header-container").addClass("header-small");
-            $(".themes-container").addClass("themes-container-black");
+            $(".search-container").addClass("search-container-small");
+            // $(".themes-container").addClass("themes-container-black");
           }
         }); //on
 
@@ -332,6 +336,10 @@
 
         /* 검색 버튼 로직 */
         $(".search-button").click(function () {
+          window.scrollTo({
+            top: 0, // 스크롤의 최상단 위치
+            behavior: "smooth", // 부드럽게 스크롤 이동
+          });
           // 검색어 가져오기
           var searchText = $(".search").val();
 
@@ -364,7 +372,6 @@
     <video autoplay muted loop>
       <source src="./videos/background-video.mp4" />
     </video>
-
     <!-- 헤더 -->
     <div class="header-container">
       <div class="serach-containerBox">

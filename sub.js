@@ -1,11 +1,10 @@
 import { previewData, allData } from "./data.js";
-
+// TODO js 코드 옮기기
 $(function () {
+  // 리뷰 목록 (미리보기 목록)
   $.each(previewData, (index, item) => {
-    console.log("index : ", index);
-    console.log("item : ", item);
-
-    // 리뷰 목록 (미리보기 목록)
+    // console.log("index : ", index);
+    // console.log("item : ", item);
     $(".review-ul").append(`
         <li class="review-li">
             <div class="reviewer-info">
